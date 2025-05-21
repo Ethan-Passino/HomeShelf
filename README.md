@@ -20,7 +20,7 @@
 ## 🚧 Current Status
 
 > ⚠️ In development — not yet production-ready.  
-> Built in free time alongside a full-time software engineering position.  
+> Built in free time alongside a full-time Full Stack Developer position.  
 
 ---
 
