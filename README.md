@@ -71,4 +71,4 @@ Contributions are welcome! Feel free to fork, open issues, or submit pull reques
 ## 📬 Contact
 
 Built by [Ethan Passino](https://github.com/epassino)  
-For support or feedback: [Open an Issue](https://github.com/yourusername/homeshelf/issues)
+For support or feedback or any ideas: [Open an Issue](https://github.com/yourusername/homeshelf/issues)
