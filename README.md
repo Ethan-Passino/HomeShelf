@@ -1,6 +1,6 @@
 # 🏠 HomeShelf
 
-**HomeShelf** is a Progressive Web App (PWA) designed to help users manage home inventory — especially food items in their fridge and pantry. Users can add items with pictures and expiration dates, track inventory across multiple homes, and get notified about expiring goods. Designed for use across multiple devices, HomeShelf prioritizes simplicity, flexibility, and collaboration.
+**HomeShelf** is a Progressive Web App (PWA) designed to help users manage home inventory, specifically food items in their fridge and pantry. Users can add items with pictures and expiration dates, track inventory across multiple homes, and get notified about expiring goods. Designed for use across multiple devices, HomeShelf prioritizes simplicity, flexibility, and collaboration.
 
 ---
 
