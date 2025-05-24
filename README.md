@@ -56,12 +56,6 @@
 
 ---
 
-## 📃 License
-
-This project is licensed under the MIT License.
-
----
-
 ## 🤝 Contributions
 
 Contributions are welcome! Feel free to fork, open issues, or submit pull requests.
