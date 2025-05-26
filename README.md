@@ -19,7 +19,7 @@
 
 ## 🚧 Current Status
 
-> ⚠️ In development — not yet production-ready.  
+> ⚠️ In development — not yet production-ready and very early in development.  
 > Built in free time alongside a full-time Full Stack Developer position.  
 
 ---
