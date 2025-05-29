@@ -1,47 +1,18 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 
-export interface IUser extends Document {
-  email: string;
-  password: string;
-  name?: string;
-  homes: string[]; // references to Home documents
-  invitedTo: string[]; // homes the user was invited to
-}
+dotenv.config();
 
-const UserSchema: Schema = new Schema(
-  {
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-    name: {
-      type: String,
-    },
-    homes: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Home',
-      },
-    ],
-    invitedTo: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Home',
-      },
-    ],
-  },
-  {
-    timestamps: true,
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGO_URI as string, {
+      dbName: 'homeshelf',
+    });
+    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.error('❌ MongoDB connection failed:', error);
+    process.exit(1);
   }
-);
+};
 
-const User = mongoose.model<IUser>('User', UserSchema);
-
-export default User;
+export default connectDB;
