@@ -9,13 +9,19 @@ const generateToken = (id: string) => {
   });
 };
 
-export const registerUser = async (req: Request, res: Response) => {
+export const registerUser = async (req: Request, res: Response): Promise<void> => {
   const { email, password, name } = req.body;
 
-  if (!email || !password) return res.status(400).json({ message: 'Missing email or password' });
+  if (!email || !password) {
+    res.status(400).json({ message: 'Missing email or password' });
+    return;
+  }
 
   const userExists = await User.findOne({ email });
-  if (userExists) return res.status(400).json({ message: 'User already exists' });
+  if (userExists) {
+    res.status(400).json({ message: 'User already exists' });
+    return;
+  }
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -23,7 +29,7 @@ export const registerUser = async (req: Request, res: Response) => {
     email,
     password: hashedPassword,
     name,
-  }) as IUser;
+  });
 
   res.status(201).json({
     _id: user._id,
@@ -33,14 +39,21 @@ export const registerUser = async (req: Request, res: Response) => {
   });
 };
 
-export const loginUser = async (req: Request, res: Response) => {
+
+export const loginUser = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });
-  if (!user) return res.status(400).json({ message: 'Invalid credentials' });
+  if (!user) {
+    res.status(400).json({ message: 'Invalid credentials' });
+    return;
+  }
 
   const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+  if (!isMatch) {
+    res.status(400).json({ message: 'Invalid credentials' });
+    return;
+  }
 
   res.json({
     _id: user._id,
