@@ -51,6 +51,8 @@ export const deleteHome = async (req: Request, res: Response): Promise<void> => 
     return;
   }
 
+  
+
   if (home.owner.toString() !== req.user._id.toString()) {
     res.status(403).json({ message: 'Not authorized to delete this home' });
     return;
