@@ -19,7 +19,8 @@
 
 ## 🚧 Current Status
 
-> ⚠️ In development — not yet production-ready and very early in development. Currently working on backend routing
+> ⚠️ In development — not yet production-ready and very early in development. 
+> Currently working on backend routing and middleware
 > Built in free time alongside a full-time Full Stack Developer position.  
 
 ---
