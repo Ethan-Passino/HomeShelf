@@ -5,6 +5,7 @@ import connectDB from './db/db';
 import authRoutes from './routes/authRoutes';
 import homeRoutes from './routes/homeRoutes';
 import inventoryRoutes from './routes/inventoryRoutes';
+import catalogRoutes from './routes/catalogRoutes';
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use('/api/auth');
 app.use('/api/homes', homeRoutes);
 app.use('/api/inventory', inventoryRoutes);
+app.use('/api/catalog', catalogRoutes);
 
 const PORT = process.env.PORT || 5000;
 
