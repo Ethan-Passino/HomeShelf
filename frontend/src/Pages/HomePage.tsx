@@ -1,6 +1,54 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+import InventoryIcon from '@mui/icons-material/Inventory';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import HomeWorkIcon from '@mui/icons-material/HomeWork';
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
+
+const features = [
+  {
+    title: 'Track Everything',
+    sub: 'Full home inventory control',
+    icon: <InventoryIcon className="text-5xl text-blue-500" />,
+    points: [
+      'Add food, supplies, and tools',
+      'Organized by category and location',
+      'Search & filter instantly',
+    ],
+  },
+  {
+    title: 'Smart Notifications',
+    sub: 'Never let anything go bad',
+    icon: <NotificationsActiveIcon className="text-5xl text-yellow-500" />,
+    points: [
+      'Expiration reminders before it’s too late',
+      'Low-stock alerts based on quantity',
+      'Customizable per item type',
+    ],
+  },
+  {
+    title: 'Multiple Homes',
+    sub: 'One app, many places',
+    icon: <HomeWorkIcon className="text-5xl text-green-500" />,
+    points: [
+      'Switch between homes instantly',
+      'Perfect for landlords or families',
+      'Shared access options (coming soon)',
+    ],
+  },
+  {
+    title: 'Visual Catalog',
+    sub: 'Snap it, track it',
+    icon: <CameraAltIcon className="text-5xl text-purple-500" />,
+    points: [
+      'Upload photos for easy reference',
+      'Great for expiration checks',
+      'Optional fields stay out of your way',
+    ],
+  },
+];
+
 const HomePage = () => {
   return (
     <div className="w-full bg-gradient-to-b from-white to-blue-50">
@@ -46,48 +94,7 @@ const HomePage = () => {
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-left">
-          {[
-            {
-              title: 'Track Everything',
-              sub: 'Full home inventory control',
-              icon: '📦',
-              points: [
-                'Add food, supplies, and tools',
-                'Organized by category and location',
-                'Search & filter instantly',
-              ],
-            },
-            {
-              title: 'Smart Notifications',
-              sub: 'Never let anything go bad',
-              icon: '🔔',
-              points: [
-                'Expiration reminders before it’s too late',
-                'Low-stock alerts based on quantity',
-                'Customizable per item type',
-              ],
-            },
-            {
-              title: 'Multiple Homes',
-              sub: 'One app, many places',
-              icon: '🏠',
-              points: [
-                'Switch between homes instantly',
-                'Perfect for landlords or families',
-                'Shared access options (coming soon)',
-              ],
-            },
-            {
-              title: 'Visual Catalog',
-              sub: 'Snap it, track it',
-              icon: '📸',
-              points: [
-                'Upload photos for easy reference',
-                'Great for expiration checks',
-                'Optional fields stay out of your way',
-              ],
-            },
-          ].map((feature, index) => (
+          {features.map((feature, index) => (
             <div
               key={index}
               className="p-6 bg-gradient-to-br from-gray-50 to-white rounded-xl shadow-md border hover:shadow-xl transition"
