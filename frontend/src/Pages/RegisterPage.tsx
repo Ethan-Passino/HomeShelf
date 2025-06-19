@@ -42,7 +42,7 @@ const RegisterPage = () => {
         >
           ← Back to Home
         </Link>
-
+        <br />
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
           Create Account
         </h2>
