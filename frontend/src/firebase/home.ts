@@ -20,18 +20,28 @@ export const createHome = async (home: Omit<Home, 'id'>): Promise<string> => {
 };
 
 export const getHomesByUser = async (userId: string): Promise<Home[]> => {
-  const q = query(homesCollection, where('memberIds', 'array-contains', userId));
+  const q = query(
+    homesCollection,
+    where('memberIds', 'array-contains', userId)
+  );
   const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Home));
+  return querySnapshot.docs.map(
+    (doc) => ({ id: doc.id, ...doc.data() }) as Home
+  );
 };
 
 export const getHomeById = async (homeId: string): Promise<Home | null> => {
   const docRef = doc(homesCollection, homeId);
   const snapshot = await getDoc(docRef);
-  return snapshot.exists() ? ({ id: snapshot.id, ...snapshot.data() } as Home) : null;
+  return snapshot.exists()
+    ? ({ id: snapshot.id, ...snapshot.data() } as Home)
+    : null;
 };
 
-export const updateHome = async (homeId: string, updates: Partial<Home>): Promise<void> => {
+export const updateHome = async (
+  homeId: string,
+  updates: Partial<Home>
+): Promise<void> => {
   const docRef = doc(homesCollection, homeId);
   await updateDoc(docRef, updates);
 };
