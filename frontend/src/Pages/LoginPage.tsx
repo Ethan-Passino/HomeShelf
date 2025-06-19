@@ -1,3 +1,4 @@
+import Divider from '@mui/material/Divider';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -12,16 +13,18 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-green-400 px-4">
-      {/* Back to Home Link */}
-      <div className="absolute top-6 left-6">
-        <Link to="/" className="text-white text-sm font-medium hover:underline">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-green-400 px-4 py-10">
+      <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-6 sm:p-8 relative">
+        {/* Back to Home Link */}
+        <Link
+          to="/"
+          className="absolute top-4 left-4 text-sm text-blue-600 hover:underline"
+        >
           ← Back to Home
         </Link>
-      </div>
-      <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
+        <br />
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
-          Login to HomeShelf
+          Login
         </h2>
 
         <form className="space-y-4">
@@ -75,7 +78,7 @@ const LoginPage = () => {
           <button
             type="button"
             onClick={handleGoogleLogin}
-            className="mt-6 w-full py-2 border border-gray-300 text-gray-700 font-semibold rounded hover:bg-gray-100 transition flex items-center justify-center gap-2"
+            className="mt-6 w-full py-2 border border-gray-300 text-gray-700 font-semibold rounded hover:bg-gray-100 transition flex items-center justify-center gap-3"
           >
             <img
               src="https://www.svgrepo.com/show/475656/google-color.svg"
