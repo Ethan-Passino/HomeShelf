@@ -12,7 +12,7 @@ const HomePage = () => {
           </p>
           <div className="flex gap-4">
             <button className="px-6 py-2 bg-white text-blue-600 font-semibold rounded shadow hover:bg-blue-100 transition">
-              Sign In
+              Login
             </button>
             <button className="px-6 py-2 border border-white text-white font-semibold rounded hover:bg-white hover:text-blue-600 transition">
               Register
