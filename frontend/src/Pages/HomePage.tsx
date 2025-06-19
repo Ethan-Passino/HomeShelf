@@ -10,7 +10,9 @@ const features = [
   {
     title: 'Track Everything',
     sub: 'Full home inventory control',
-    icon: <InventoryIcon className="text-5xl text-blue-500" />,
+    icon: (
+      <InventoryIcon style={{ fontSize: '50px' }} className="text-blue-500" />
+    ),
     points: [
       'Add food, supplies, and tools',
       'Organized by category and location',
@@ -20,7 +22,12 @@ const features = [
   {
     title: 'Smart Notifications',
     sub: 'Never let anything go bad',
-    icon: <NotificationsActiveIcon className="text-5xl text-yellow-500" />,
+    icon: (
+      <NotificationsActiveIcon
+        style={{ fontSize: '50px' }}
+        className="text-5xl text-yellow-500"
+      />
+    ),
     points: [
       'Expiration reminders before it’s too late',
       'Low-stock alerts based on quantity',
@@ -30,7 +37,12 @@ const features = [
   {
     title: 'Multiple Homes',
     sub: 'One app, many places',
-    icon: <HomeWorkIcon className="text-5xl text-green-500" />,
+    icon: (
+      <HomeWorkIcon
+        style={{ fontSize: '50px' }}
+        className="text-5xl text-green-500"
+      />
+    ),
     points: [
       'Switch between homes instantly',
       'Perfect for landlords or families',
@@ -40,7 +52,12 @@ const features = [
   {
     title: 'Visual Catalog',
     sub: 'Snap it, track it',
-    icon: <CameraAltIcon className="text-5xl text-purple-500" />,
+    icon: (
+      <CameraAltIcon
+        style={{ fontSize: '50px' }}
+        className="text-5xl text-purple-500"
+      />
+    ),
     points: [
       'Upload photos for easy reference',
       'Great for expiration checks',
