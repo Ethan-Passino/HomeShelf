@@ -93,11 +93,30 @@ const HomePage = () => {
           </div>
         </div>
 
-        <img
-          src="https://via.placeholder.com/600x400.png?text=HomeShelf+Dashboard"
-          alt="App preview"
-          className="flex-1 w-full max-w-xl rounded-lg shadow-2xl"
-        />
+        <div className="flex-1 w-full max-w-xl bg-white text-gray-800 rounded-lg shadow-2xl p-6 space-y-6">
+          <div className="flex items-start gap-4">
+            <span className="text-4xl">😬</span>
+            <div>
+              <p className="font-bold text-lg">
+                You forgot what’s in your fridge again?
+              </p>
+              <p className="text-sm text-gray-600">
+                That expired yogurt? Gone.
+              </p>
+            </div>
+          </div>
+          <div className="border-t border-gray-300 pt-4 flex items-start gap-4">
+            <span className="text-4xl">🧾 </span>
+            <div>
+              <p className="font-bold text-lg">
+                HomeShelf makes forgetfulness a thing of the past.
+              </p>
+              <p className="text-sm text-gray-600">
+                Smart notifications. Real-time tracking. Peace of mind.
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Features Section */}
