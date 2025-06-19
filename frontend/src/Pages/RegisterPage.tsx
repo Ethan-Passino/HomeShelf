@@ -4,9 +4,17 @@ import { Link } from 'react-router-dom';
 const RegisterPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (password !== confirmPassword) {
+      setErrorMessage('Passwords do not match.');
+      return;
+    }
+
     try {
       console.log('✅ User registered');
       // TODO: redirect or update app state
@@ -34,7 +42,7 @@ const RegisterPage = () => {
         >
           ← Back to Home
         </Link>
-        <br />
+
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
           Create Account
         </h2>
@@ -67,6 +75,24 @@ const RegisterPage = () => {
               required
             />
           </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="••••••••"
+              required
+            />
+          </div>
+
+          {errorMessage && (
+            <p className="text-sm text-red-600 font-medium">{errorMessage}</p>
+          )}
 
           <button
             type="submit"
