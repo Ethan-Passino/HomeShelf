@@ -1,5 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import GroupAddOutlinedIcon from '@mui/icons-material/GroupAddOutlined';
+import Tooltip from '@mui/material/Tooltip';
 
 const DashboardPage = () => {
   const dummyHomes = [
@@ -18,24 +22,38 @@ const DashboardPage = () => {
           {dummyHomes.map((home) => (
             <div
               key={home.id}
-              className="bg-white/90 backdrop-blur-md text-gray-800 rounded-2xl shadow-lg p-6 flex flex-col justify-between transition hover:scale-[1.02] hover:shadow-2xl"
+              className="relative bg-white/90 backdrop-blur-md text-gray-800 rounded-2xl shadow-lg p-6 flex flex-col justify-between transition hover:scale-[1.02] hover:shadow-2xl"
             >
-              <div>
+              {/* Top-right icon buttons */}
+              <div className="absolute top-4 right-4 flex gap-2">
+                <Tooltip title="Edit Home">
+                  <button className="p-1 rounded-full bg-white hover:bg-gray-100 shadow">
+                    <EditOutlinedIcon fontSize="small" />
+                  </button>
+                </Tooltip>
+                <Tooltip title="Invite Members">
+                  <button className="p-1 rounded-full bg-white hover:bg-gray-100 shadow">
+                    <GroupAddOutlinedIcon fontSize="small" />
+                  </button>
+                </Tooltip>
+              </div>
+
+              {/* Home details */}
+              <div className="pt-6">
                 <h2 className="text-2xl font-semibold mb-2">{home.name}</h2>
                 <p className="text-sm text-gray-500">
                   Created: {new Date(home.createdAt).toLocaleDateString()}
                 </p>
               </div>
-              <div className="mt-6 flex gap-3">
+
+              {/* Bottom action */}
+              <div className="mt-6">
                 <Link
                   to={`/home/${home.id}`}
-                  className="flex-1 py-2 bg-blue-600 text-white rounded-lg font-medium text-sm text-center hover:bg-blue-700 transition"
+                  className="flex items-center justify-center gap-2 w-full py-2 border-2 border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50 transition"
                 >
-                  Open Home
+                  <ArrowForwardIosIcon fontSize="small" />
                 </Link>
-                <button className="py-2 px-4 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 transition">
-                  Delete
-                </button>
               </div>
             </div>
           ))}
