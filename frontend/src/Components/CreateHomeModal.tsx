@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { TextField, Button, IconButton, Chip, Typography } from '@mui/material';
+import { TextField, IconButton, Chip } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -76,27 +76,49 @@ const CreateHomeModal: React.FC<CreateHomeModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6 relative">
+      <div className="relative bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
+        {/* Close button */}
         <div className="absolute top-4 right-4">
           <IconButton onClick={onClose}>
             <CloseIcon />
           </IconButton>
         </div>
 
-        <h2 className="text-xl font-semibold mb-4">Create New Home</h2>
+        {/* Header */}
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">
+          Create a Home
+        </h2>
 
+        {/* Home Name Input */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Home Name
+          </label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {nameError && (
+            <p className="text-sm text-red-600 mt-1">{nameError}</p>
+          )}
+        </div>
+
+        {/* Email Input */}
         <TextField
-          label="Home Name"
+          label="Invite by Email (press Enter)"
           fullWidth
           variant="outlined"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          error={!!nameError}
-          helperText={nameError}
-          className="mb-4"
+          value={emailInput}
+          onChange={(e) => setEmailInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          error={!!emailError}
+          helperText={emailError}
         />
 
-        <div className="mb-2 flex flex-wrap gap-2">
+        {/* Email List Chips */}
+        <div className="mb-4 flex flex-wrap gap-2">
           {emailList.map((email) => (
             <Chip
               key={email}
@@ -109,24 +131,20 @@ const CreateHomeModal: React.FC<CreateHomeModalProps> = ({
           ))}
         </div>
 
-        <TextField
-          label="Invite by Email (press Enter)"
-          fullWidth
-          variant="outlined"
-          value={emailInput}
-          onChange={(e) => setEmailInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          error={!!emailError}
-          helperText={emailError}
-        />
-
-        <div className="flex justify-end mt-6 gap-2">
-          <Button variant="outlined" onClick={onClose}>
+        {/* Actions */}
+        <div className="flex justify-end gap-2 mt-6">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-sm text-gray-600 rounded hover:bg-gray-100 hover:text-gray-900 transition"
+          >
             Cancel
-          </Button>
-          <Button variant="contained" color="primary" onClick={handleCreate}>
+          </button>
+          <button
+            onClick={handleCreate}
+            className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 hover:shadow-md transition"
+          >
             Create Home
-          </Button>
+          </button>
         </div>
       </div>
     </div>
