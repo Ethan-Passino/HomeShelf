@@ -20,7 +20,7 @@
 ## 🚧 Current Status
 
 > ⚠️ In development — not yet production-ready and very early in development. 
-> Currently working on backend routing and middleware.
+> Currently working on page design.
 > Built in free time alongside a full-time Full Stack Developer position.  
 
 ---
@@ -35,12 +35,10 @@
 - [vite-plugin-pwa](https://vite-pwa-org.netlify.app/)
 
 ### Backend
-- [Node.js](https://nodejs.org/)
-- [Express](https://expressjs.com/)
-- [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+- [Firebase](https://firebase.google.com/)
 
 ### Hosting
-- VPS-hosted MongoDB and API
+- VPS-hosted
 - Static frontend deployed from build output
 
 ---
@@ -65,5 +63,5 @@ Contributions are welcome! Feel free to fork, open issues, or submit pull reques
 
 ## 📬 Contact
 
-Built by [Ethan Passino](https://github.com/epassino)  
-For support or feedback or any ideas: [Open an Issue](https://github.com/yourusername/homeshelf/issues)
+Built by [Ethan Passino](https://github.com/ethan-passino)  
+For support or feedback or any ideas: [Open an Issue](https://github.com/ethan-passino/homeshelf/issues)
