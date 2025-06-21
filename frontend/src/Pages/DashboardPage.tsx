@@ -1,15 +1,68 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import GroupAddOutlinedIcon from '@mui/icons-material/GroupAddOutlined';
 import Tooltip from '@mui/material/Tooltip';
+import EditHomeModal from '../Components/EditHomeModal';
+import InviteUserModal from '../Components/InviteUserModal';
+import CreateHomeModal from '../Components/CreateHomeModal';
+
+interface Home {
+  id: string;
+  name: string;
+  createdAt: string;
+}
 
 const DashboardPage = () => {
-  const dummyHomes = [
+  const [homes, setHomes] = useState<Home[]>([
     { id: '1', name: 'Main House', createdAt: '2024-12-01' },
     { id: '2', name: 'Lake Cabin', createdAt: '2025-02-10' },
-  ];
+  ]);
+
+  const [selectedHome, setSelectedHome] = useState<Home | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
+
+  const handleEditClick = (home: Home) => {
+    setSelectedHome(home);
+    setEditOpen(true);
+  };
+
+  const handleInviteClick = (home: Home) => {
+    setSelectedHome(home);
+    setInviteOpen(true);
+  };
+
+  const handleSaveEdit = (newName: string) => {
+    if (!selectedHome) return;
+    setHomes((prev) =>
+      prev.map((h) => (h.id === selectedHome.id ? { ...h, name: newName } : h))
+    );
+  };
+
+  const handleDeleteHome = () => {
+    if (!selectedHome) return;
+    setHomes((prev) => prev.filter((h) => h.id !== selectedHome.id));
+  };
+
+  const handleSendInvite = (email: string) => {
+    console.log(`Inviting ${email} to ${selectedHome?.name}`);
+    // TODO: Implement real invite logic
+  };
+
+  const handleCreateHome = (name: string, invitedEmails: string[]) => {
+    const newHome: Home = {
+      id: Date.now().toString(),
+      name,
+      createdAt: new Date().toISOString().split('T')[0],
+    };
+    setHomes((prev) => [...prev, newHome]);
+
+    console.log('Inviting to new home:', invitedEmails);
+    // TODO: Optionally invite users
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-500 to-green-400 px-4 py-12 text-white">
@@ -19,20 +72,26 @@ const DashboardPage = () => {
         </h1>
 
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {dummyHomes.map((home) => (
+          {homes.map((home) => (
             <div
               key={home.id}
-              className="relative bg-white/90 backdrop-blur-md text-gray-800 rounded-2xl shadow-lg p-6 flex flex-col justify-between transition hover:scale-[1.02] hover:shadow-2xl"
+              className="h-[250px] relative bg-white/90 backdrop-blur-md text-gray-800 rounded-2xl shadow-lg p-6 flex flex-col justify-between transition hover:scale-[1.02] hover:shadow-2xl"
             >
               {/* Top-right icon buttons */}
               <div className="absolute top-4 right-4 flex gap-2">
                 <Tooltip title="Edit Home">
-                  <button className="p-1 rounded-full bg-white hover:bg-gray-100 shadow">
+                  <button
+                    onClick={() => handleEditClick(home)}
+                    className="p-1 rounded-full bg-white hover:bg-gray-100 shadow"
+                  >
                     <EditOutlinedIcon fontSize="small" />
                   </button>
                 </Tooltip>
                 <Tooltip title="Invite Members">
-                  <button className="p-1 rounded-full bg-white hover:bg-gray-100 shadow">
+                  <button
+                    onClick={() => handleInviteClick(home)}
+                    className="p-1 rounded-full bg-white hover:bg-gray-100 shadow"
+                  >
                     <GroupAddOutlinedIcon fontSize="small" />
                   </button>
                 </Tooltip>
@@ -52,6 +111,7 @@ const DashboardPage = () => {
                   to={`/home/${home.id}`}
                   className="flex items-center justify-center gap-2 w-full py-2 border-2 border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50 transition"
                 >
+                  Open Home
                   <ArrowForwardIosIcon fontSize="small" />
                 </Link>
               </div>
@@ -59,14 +119,41 @@ const DashboardPage = () => {
           ))}
 
           {/* Add New Home Card */}
-          <Link
-            to="/create-home"
-            className="bg-white/30 border-2 border-white border-dashed rounded-2xl p-6 flex items-center justify-center text-white text-xl font-semibold hover:bg-white/40 transition backdrop-blur-md hover:scale-[1.02]"
-          >
-            + Add New Home
-          </Link>
+          <div className="w-full h-[250px]">
+            <button
+              onClick={() => setCreateOpen(true)}
+              className="w-full h-full bg-white/30 border-2 border-white border-dashed rounded-2xl p-6 flex items-center justify-center text-white text-xl font-semibold hover:bg-white/40 transition backdrop-blur-md hover:scale-[1.02]"
+            >
+              + Add New Home
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Modals */}
+      {selectedHome && (
+        <EditHomeModal
+          open={editOpen}
+          onClose={() => setEditOpen(false)}
+          onSave={handleSaveEdit}
+          onDelete={handleDeleteHome}
+          initialName={selectedHome.name}
+        />
+      )}
+
+      {selectedHome && (
+        <InviteUserModal
+          open={inviteOpen}
+          onClose={() => setInviteOpen(false)}
+          onInvite={() => handleSendInvite('')}
+        />
+      )}
+
+      <CreateHomeModal
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        onCreate={handleCreateHome}
+      />
     </div>
   );
 };
