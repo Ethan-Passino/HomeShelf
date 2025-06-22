@@ -43,7 +43,7 @@
 
 ---
 
-## 📲 PWA Installation
+## 📲 PWA Installation (currently unavailable)
 
 ### iOS
 1. Open the app in **Safari**
