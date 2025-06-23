@@ -39,7 +39,7 @@
 
 ### Hosting
 - VPS-hosted
-- Static frontend deployed from build output
+- Frontend deployed from build output, with firebase acting as the backend
 
 ---
 
