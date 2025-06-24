@@ -7,4 +7,5 @@ export type CatalogItem = {
   createdBy: string;
   createdAt: Date;
   updatedAt: Date;
+  tags?: string[]; // e.g., ["food", "tools", "books"]
 };
