@@ -1,15 +1,15 @@
 # 🏠 HomeShelf
 
-**HomeShelf** is a Progressive Web App (PWA) designed to help users manage home inventory, specifically food items in their fridge and pantry. Users can add items with pictures and expiration dates, track inventory across multiple homes, and get notified about expiring goods. Designed for use across multiple devices, HomeShelf prioritizes simplicity, flexibility, and collaboration.
+**HomeShelf** is a Progressive Web App (PWA) designed to help users manage and organize their belongings across multiple spaces. While originally focused on tracking food items in fridges and pantries, it has evolved into a flexible inventory and home organization tool. Users can add items with pictures, descriptions, and tags, manage storage across rooms or locations, and track everything from pantry goods to tools, books, and more.
 
 ---
 
 ## ✨ Features
 
-- 📸 Add items to a reusable catalog by snapping photos and naming them
-- 📦 Track quantities, expiration dates, and storage locations (fridge, pantry, etc.)
-- 🏠 Manage multiple homes (e.g., Home, Cabin, Grandma's) — each with its own inventory
-- 🔍 Filter and search by location, expiration status, or name
+- 📸 Add items to a reusable catalog by snapping photos, naming them, and applying descriptive tags
+- 📦 Track quantities, expiration dates, and storage locations (e.g., fridge, pantry, garage, closet)
+- 🏠 Manage multiple homes or spaces (e.g., Home, Cabin, Storage Unit) — each with its own inventory
+- 🔍 Filter and search by location, expiration status, tags, or name
 - 🔔 Get notified when items are near or past expiration
 - 📱 Installable as a PWA (iOS, Android, Desktop)
 - 🔐 User authentication with sign-up/sign-in functionality
@@ -19,9 +19,8 @@
 
 ## 🚧 Current Status
 
-> ⚠️ In development — not yet production-ready and very early in development. 
-> Currently working on page design.
-> Built in free time alongside a full-time Full Stack Developer position.  
+> ⚠️ In development — not yet production-ready and still in active design/build phases.  
+> Development happens alongside a full-time Full Stack Developer position.
 
 ---
 
@@ -39,7 +38,7 @@
 
 ### Hosting
 - VPS-hosted
-- Frontend deployed from build output, with firebase acting as the backend
+- Frontend deployed from build output, with Firebase acting as the backend
 
 ---
 
@@ -55,13 +54,7 @@
 
 ---
 
-## 🤝 Contributions
-
-Contributions are welcome! Feel free to fork, open issues, or submit pull requests.
-
----
-
 ## 📬 Contact
 
 Built by [Ethan Passino](https://github.com/ethan-passino)  
-For support or feedback or any ideas: [Open an Issue](https://github.com/ethan-passino/homeshelf/issues)
+For support, feedback, or feature ideas: [Open an Issue](https://github.com/ethan-passino/homeshelf/issues)
