@@ -44,14 +44,6 @@
 
 ## 📲 PWA Installation (currently unavailable)
 
-### iOS
-1. Open the app in **Safari**
-2. Tap the **Share** button → **Add to Home Screen**
-
-### Android
-1. Open the app in **Chrome**
-2. Tap the **Install App** banner or menu → **Add to Home screen**
-
 ---
 
 ## 📬 Contact
