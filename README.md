@@ -32,6 +32,7 @@
 - [Tailwind CSS](https://tailwindcss.com/)
 - [Vite](https://vitejs.dev/)
 - [vite-plugin-pwa](https://vite-pwa-org.netlify.app/)
+- [MUI](https://mui.com/)
 
 ### Backend
 - [Firebase](https://firebase.google.com/)
