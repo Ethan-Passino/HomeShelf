@@ -38,8 +38,7 @@
 - [Firebase](https://firebase.google.com/)
 
 ### Hosting
-- VPS-hosted
-- Frontend deployed from build output, with Firebase acting as the backend
+Frontend hosted on VPS with Firebase acting as the backend.
 
 ---
 
