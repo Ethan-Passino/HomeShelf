@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Tabs, Tab, Box, Typography, Button, Divider } from '@mui/material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import InventoryTab from '../Components/Tabs/InventoryTab';
 
 const HomePage: React.FC = () => {
   const { homeId } = useParams();
@@ -14,7 +15,7 @@ const HomePage: React.FC = () => {
   const renderTabContent = () => {
     switch (tabIndex) {
       case 0:
-        return <Placeholder title="Inventory" />;
+        return <InventoryTab />;
       case 1:
         return <Placeholder title="Catalog" />;
       case 2:
