@@ -12,8 +12,11 @@ import {
   Paper,
   Tooltip,
   TableSortLabel,
+  IconButton,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import type { InventoryItem } from '../../types/inventoryItem';
 
 type SortField = 'location' | 'quantity' | 'expirationDate';
@@ -45,7 +48,7 @@ const catalogMap = new Map<string, string>(
 
 const InventoryTab: React.FC = () => {
   const [page, setPage] = useState(0);
-  const rowsPerPage = 15;
+  const rowsPerPage = 10;
   const [sortField, setSortField] = useState<SortField>('expirationDate');
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
 
@@ -172,6 +175,7 @@ const InventoryTab: React.FC = () => {
               </TableCell>
 
               <TableCell>Notes</TableCell>
+              <TableCell align="center">Actions</TableCell>
             </TableRow>
           </TableHead>
 
@@ -233,6 +237,25 @@ const InventoryTab: React.FC = () => {
                     )}
                   </TableCell>
                   <TableCell>{item.notes || '—'}</TableCell>
+                  <TableCell align="center">
+                    <Tooltip title="Edit">
+                      <IconButton
+                        size="small"
+                        onClick={() => alert(`Edit item: ${itemName}`)}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete">
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => alert(`Delete item: ${itemName}`)}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
                 </TableRow>
               );
             })}

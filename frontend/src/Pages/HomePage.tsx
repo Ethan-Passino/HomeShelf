@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Tabs, Tab, Box, Typography, Button, Divider } from '@mui/material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import InventoryTab from '../Components/Tabs/InventoryTab';
+import CatalogTab from '../Components/Tabs/CatalogTab';
 
 const HomePage: React.FC = () => {
   const { homeId } = useParams();
@@ -17,7 +18,7 @@ const HomePage: React.FC = () => {
       case 0:
         return <InventoryTab />;
       case 1:
-        return <Placeholder title="Catalog" />;
+        return <CatalogTab />;
       case 2:
         return <Placeholder title="Members" />;
       case 3:
