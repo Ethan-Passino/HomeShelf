@@ -19,7 +19,7 @@
 
 ## 🚧 Current Status
 
-> ⚠️ In development — not yet production-ready and still in active design/build phases with most work being done on the frontend.
+> ⚠️ In development — not yet production-ready and still in active design/build phases with most work being done on the frontend. Currently working on the "Home Details" page
 > Development happens alongside a full-time Full Stack Developer position.
 
 ---
