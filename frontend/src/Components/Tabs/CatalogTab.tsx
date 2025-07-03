@@ -55,7 +55,7 @@ type SortOrder = 'asc' | 'desc';
 
 const CatalogTab: React.FC = () => {
   const [page, setPage] = useState(0);
-  const rowsPerPage = 10;
+  const rowsPerPage = 7;
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [sortField, setSortField] = useState<SortField>('createdAt');
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
