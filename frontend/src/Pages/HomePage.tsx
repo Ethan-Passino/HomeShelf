@@ -4,6 +4,7 @@ import { Tabs, Tab, Box, Typography, Button, Divider } from '@mui/material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import InventoryTab from '../Components/Tabs/InventoryTab';
 import CatalogTab from '../Components/Tabs/CatalogTab';
+import MembersTab from '../Components/Tabs/MembersTab';
 
 const HomePage: React.FC = () => {
   const { homeId } = useParams();
@@ -20,7 +21,25 @@ const HomePage: React.FC = () => {
       case 1:
         return <CatalogTab />;
       case 2:
-        return <Placeholder title="Members" />;
+        return (
+          <MembersTab
+            memberIds={[
+              'user_abc123',
+              'user_def456',
+              'user_ghi789',
+              'user_xyz101',
+              'user_jkl234',
+              'user_mno567',
+              'user_pqr890',
+              'user_stu321',
+              'user_vwx654',
+              'user_yza987',
+              'user_bcd210',
+              'user_efg543',
+              'user_hij876',
+            ]}
+          />
+        );
       case 3:
         return <Placeholder title="Settings" />;
       default:
