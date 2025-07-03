@@ -4,9 +4,9 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import GroupAddOutlinedIcon from '@mui/icons-material/GroupAddOutlined';
 import Tooltip from '@mui/material/Tooltip';
-import EditHomeModal from '../Components/EditHomeModal';
-import InviteUserModal from '../Components/InviteUserModal';
-import CreateHomeModal from '../Components/CreateHomeModal';
+import EditHomeModal from '../Components/Modals/EditHomeModal';
+import InviteUserModal from '../Components/Modals/InviteUserModal';
+import CreateHomeModal from '../Components/Modals/CreateHomeModal';
 
 interface Home {
   id: string;
