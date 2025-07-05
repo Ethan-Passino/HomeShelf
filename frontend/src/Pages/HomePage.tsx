@@ -5,6 +5,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import InventoryTab from '../Components/Tabs/InventoryTab';
 import CatalogTab from '../Components/Tabs/CatalogTab';
 import MembersTab from '../Components/Tabs/MembersTab';
+import InfoTab from '../Components/Tabs/InfoTab';
 
 const HomePage: React.FC = () => {
   const { homeId } = useParams();
@@ -41,7 +42,7 @@ const HomePage: React.FC = () => {
           />
         );
       case 3:
-        return <Placeholder title="Settings" />;
+        return <InfoTab />;
       default:
         return null;
     }
@@ -68,7 +69,7 @@ const HomePage: React.FC = () => {
           <Tab label="Inventory" />
           <Tab label="Catalog" />
           <Tab label="Members" />
-          <Tab label="Settings" />
+          <Tab label="Info" />
         </Tabs>
 
         <Divider className="my-4" />
