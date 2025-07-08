@@ -42,10 +42,6 @@ Frontend hosted on VPS with Firebase acting as the backend.
 
 ---
 
-## 📲 PWA Installation (currently unavailable)
-
----
-
 ## 📬 Contact
 
 Built by [Ethan Passino](https://github.com/ethan-passino)  
