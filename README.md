@@ -40,9 +40,4 @@
 ### Hosting
 Frontend hosted on VPS with Firebase acting as the backend.
 
----
-
-## 📬 Contact
-
-Built by [Ethan Passino](https://github.com/ethan-passino)  
-For support, feedback, or feature ideas: [Open an Issue](https://github.com/ethan-passino/homeshelf/issues)
+--
