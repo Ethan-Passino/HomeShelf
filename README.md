@@ -13,7 +13,7 @@
 - 🔔 Get notified when items are near or past expiration
 - 📱 Installable as a PWA (iOS, Android, Desktop)
 - 🔐 User authentication with sign-up/sign-in functionality
-- 🌐 Hosted on a personal VPS with MongoDB, Node.js, and React
+- 🌐 Hosted on a personal VPS with Firebase, Node.js, and React
 
 ---
 
