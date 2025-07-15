@@ -41,6 +41,5 @@
 Frontend hosted on VPS with Firebase acting as the backend.
 
 ### Contributing
-
-- Feel free to help contribute, just make a new branch and make a PR!
+Feel free to help contribute, just make a new branch and make a PR!
 --
