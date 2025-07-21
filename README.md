@@ -40,6 +40,5 @@
 ### Hosting
 Frontend hosted on VPS with Firebase acting as the backend.
 
-### Contributing
 
 
