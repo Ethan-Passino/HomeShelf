@@ -37,8 +37,5 @@
 ### Backend
 - [Firebase](https://firebase.google.com/)
 
-### Hosting
-Frontend hosted on VPS with Firebase acting as the backend.
-
 
 
