@@ -25,7 +25,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DataTable from '../Common/DataTable';
 import TableFilters from '../Common/TableFilters';
 import type { Column } from '../Common/DataTable';
-import type { CatalogItem } from '../../types/catalogItem';
+import type { CatalogItem } from '../../../../backend/src/schemas/catalog';
 import RowCard from '../Common/RowCard';
 
 const initialCatalog: CatalogItem[] = [
@@ -176,7 +176,9 @@ const CatalogTab: React.FC = () => {
 
   const availableTags = useMemo(() => {
     const tagSet = new Set<string>();
-    catalog.forEach((item) => item.tags?.forEach((tag) => tagSet.add(tag)));
+    catalog.forEach((item) =>
+      item.tags?.forEach((tag: string) => tagSet.add(tag))
+    );
     return Array.from(tagSet).sort();
   }, [catalog]);
 
@@ -336,7 +338,7 @@ const CatalogTab: React.FC = () => {
       render: (item) =>
         item.tags?.length ? (
           <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
-            {item.tags.map((tag) => (
+            {item.tags.map((tag: string) => (
               <Chip key={tag} label={tag} size="small" />
             ))}
           </Box>
@@ -464,7 +466,10 @@ const CatalogTab: React.FC = () => {
             onChange: (val) => setSelectedTag(val),
             options: [
               { value: 'all', label: 'All tags' },
-              ...availableTags.map((tag) => ({ value: tag, label: tag })),
+              ...availableTags.map((tag: string) => ({
+                value: tag,
+                label: tag,
+              })),
             ],
           },
         ]}

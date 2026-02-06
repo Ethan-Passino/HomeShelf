@@ -1,0 +1,1 @@
+{"root":["./src/app.ts","./src/server.ts","./src/config/env.ts","./src/lib/db.ts","./src/schemas/catalog.ts","./src/schemas/home.ts","./src/schemas/inventory.ts"],"version":"5.9.3"}

@@ -13,7 +13,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import DataTable from '../Common/DataTable';
 import TableFilters from '../Common/TableFilters';
 import type { Column } from '../Common/DataTable';
-import type { InventoryItem } from '../../types/inventoryItem';
+import type { InventoryItem } from '../../../../backend/src/schemas/inventory';
 import RowCard from '../Common/RowCard';
 
 type InventoryRow = InventoryItem & {
