@@ -1,104 +1,276 @@
-import React, { useState } from 'react';
+import React, { useMemo } from "react";
 import {
   Box,
   Button,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TablePagination,
-  Paper,
-  Tooltip,
-  TableSortLabel,
   IconButton,
-} from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import type { InventoryItem } from '../../types/inventoryItem';
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import DataTable from "../Common/DataTable";
+import TableFilters from "../Common/TableFilters";
+import type { Column } from "../Common/DataTable";
+import type { InventoryItem } from "../../types/inventoryItem";
 
-type SortField = 'location' | 'quantity' | 'expirationDate';
-type SortOrder = 'asc' | 'desc';
+type InventoryRow = InventoryItem & {
+  itemName: string;
+  isExpired: boolean;
+  isExpiringSoon: boolean;
+};
 
-// Mock data
-const mockInventory: InventoryItem[] = Array.from({ length: 23 }, (_, i) => ({
-  id: `${i + 1}`,
-  homeId: 'home123',
-  catalogItemId: `catalog${i + 1}`,
-  quantity: Math.floor(Math.random() * 10) + 1,
-  location: ['Pantry', 'Fridge', 'Garage'][i % 3],
-  expirationDate:
-    i === 4
-      ? '2023-12-01' // Expired item (item #5)
-      : `2025-07-${((i % 28) + 1).toString().padStart(2, '0')}`,
-  notes: i % 2 === 0 ? 'Rotate stock' : '',
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-}));
+const mockInventory: InventoryItem[] = [
+  {
+    id: "inv-001",
+    homeId: "home-main",
+    catalogItemId: "milk-1",
+    quantity: 1,
+    location: "Fridge",
+    expirationDate: "2026-02-12",
+    notes: "For breakfasts",
+    createdAt: new Date("2026-02-01T09:00:00Z").toISOString(),
+    updatedAt: new Date("2026-02-05T09:15:00Z").toISOString(),
+  },
+  {
+    id: "inv-002",
+    homeId: "home-main",
+    catalogItemId: "spinach-1",
+    quantity: 2,
+    location: "Fridge",
+    expirationDate: "2026-02-09",
+    notes: "Use for salads",
+    createdAt: new Date("2026-02-02T10:00:00Z").toISOString(),
+    updatedAt: new Date("2026-02-05T08:45:00Z").toISOString(),
+  },
+  {
+    id: "inv-003",
+    homeId: "home-main",
+    catalogItemId: "coffee-1",
+    quantity: 1,
+    location: "Pantry",
+    expirationDate: "2026-08-01",
+    notes: "Medium roast",
+    createdAt: new Date("2026-01-25T12:00:00Z").toISOString(),
+    updatedAt: new Date("2026-02-04T07:20:00Z").toISOString(),
+  },
+  {
+    id: "inv-004",
+    homeId: "home-main",
+    catalogItemId: "beans-1",
+    quantity: 6,
+    location: "Pantry",
+    expirationDate: "2027-01-15",
+    notes: "Low sodium cans",
+    createdAt: new Date("2026-01-30T15:30:00Z").toISOString(),
+    updatedAt: new Date("2026-02-05T06:55:00Z").toISOString(),
+  },
+  {
+    id: "inv-005",
+    homeId: "vacation-house",
+    catalogItemId: "pasta-1",
+    quantity: 3,
+    location: "Pantry",
+    expirationDate: "2027-05-10",
+    notes: "",
+    createdAt: new Date("2026-01-12T18:00:00Z").toISOString(),
+    updatedAt: new Date("2026-02-03T14:10:00Z").toISOString(),
+  },
+  {
+    id: "inv-006",
+    homeId: "grandma-house",
+    catalogItemId: "batteries-1",
+    quantity: 18,
+    location: "Garage",
+    expirationDate: "2029-12-31",
+    notes: "AA pack",
+    createdAt: new Date("2026-01-20T11:00:00Z").toISOString(),
+    updatedAt: new Date("2026-02-02T16:40:00Z").toISOString(),
+  },
+  {
+    id: "inv-007",
+    homeId: "vacation-house",
+    catalogItemId: "freezer-bags-1",
+    quantity: 1,
+    location: "Pantry",
+    expirationDate: "",
+    notes: "Half box left",
+    createdAt: new Date("2026-01-05T09:00:00Z").toISOString(),
+    updatedAt: new Date("2026-02-01T09:00:00Z").toISOString(),
+  },
+  {
+    id: "inv-008",
+    homeId: "home-main",
+    catalogItemId: "thermometer-1",
+    quantity: 1,
+    location: "Kitchen Drawer",
+    expirationDate: "",
+    notes: "Check battery yearly",
+    createdAt: new Date("2025-12-20T10:00:00Z").toISOString(),
+    updatedAt: new Date("2026-01-28T10:00:00Z").toISOString(),
+  },
+  {
+    id: "inv-009",
+    homeId: "home-main",
+    catalogItemId: "sponges-1",
+    quantity: 4,
+    location: "Under Sink",
+    expirationDate: "",
+    notes: "Swap weekly",
+    createdAt: new Date("2026-02-03T13:00:00Z").toISOString(),
+    updatedAt: new Date("2026-02-05T07:45:00Z").toISOString(),
+  },
+  {
+    id: "inv-010",
+    homeId: "home-main",
+    catalogItemId: "book-1",
+    quantity: 1,
+    location: "Bookshelf",
+    expirationDate: "",
+    notes: "Reference for meal prep",
+    createdAt: new Date("2025-11-15T08:00:00Z").toISOString(),
+    updatedAt: new Date("2026-01-10T08:00:00Z").toISOString(),
+  },
+  {
+    id: "inv-011",
+    homeId: "home-main",
+    catalogItemId: "spinach-1",
+    quantity: 1,
+    location: "Fridge",
+    expirationDate: "2026-02-03", // expired relative to Feb 6, 2026
+    notes: "Leftover pack",
+    createdAt: new Date("2026-01-30T09:00:00Z").toISOString(),
+    updatedAt: new Date("2026-02-04T09:00:00Z").toISOString(),
+  },
+  {
+    id: "inv-012",
+    homeId: "grandma-house",
+    catalogItemId: "milk-1",
+    quantity: 1,
+    location: "Fridge",
+    expirationDate: "2026-02-01", // expired relative to Feb 6, 2026
+    notes: "Check smell",
+    createdAt: new Date("2026-01-25T07:30:00Z").toISOString(),
+    updatedAt: new Date("2026-02-02T07:30:00Z").toISOString(),
+  },
+];
 
-// Fake catalog name mapping
 const catalogMap = new Map<string, string>(
-  mockInventory.map((item) => [
-    item.catalogItemId,
-    `Item ${item.catalogItemId.slice(7)}`,
-  ])
+  mockInventory.map((item) => [item.catalogItemId, `Item ${item.catalogItemId.slice(7)}`])
 );
 
 const InventoryTab: React.FC = () => {
-  const [page, setPage] = useState(0);
-  const rowsPerPage = 10;
-  const [sortField, setSortField] = useState<SortField>('expirationDate');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
-
-  const handleChangePage = (_: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
-    } else {
-      setSortField(field);
-      setSortOrder('asc');
-    }
-  };
-
-  const today = new Date();
-
-  const sortedItems = [...mockInventory].sort((a, b) => {
-    let aValue: string | number = '';
-    let bValue: string | number = '';
-
-    if (sortField === 'location') {
-      aValue = a.location || '';
-      bValue = b.location || '';
-    } else if (sortField === 'quantity') {
-      aValue = a.quantity;
-      bValue = b.quantity;
-    } else if (sortField === 'expirationDate') {
-      aValue = a.expirationDate || '';
-      bValue = b.expirationDate || '';
-    }
-
-    if (typeof aValue === 'number' && typeof bValue === 'number') {
-      return sortOrder === 'asc' ? aValue - bValue : bValue - aValue;
-    }
-
-    return sortOrder === 'asc'
-      ? String(aValue).localeCompare(String(bValue))
-      : String(bValue).localeCompare(String(aValue));
-  });
-
-  const paginatedItems = sortedItems.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
+  const [search, setSearch] = React.useState("");
+  const [statusFilter, setStatusFilter] = React.useState<"all" | "expired" | "soon" | "fresh">(
+    "all"
   );
+  const rows: InventoryRow[] = useMemo(() => {
+    const now = new Date();
+    return mockInventory.map((item) => {
+      const expDate = item.expirationDate ? new Date(item.expirationDate) : null;
+      const isExpired = expDate ? expDate < now : false;
+      const isExpiringSoon =
+        expDate && !isExpired ? expDate.getTime() - now.getTime() < 7 * 24 * 60 * 60 * 1000 : false;
+
+      return {
+        ...item,
+        itemName: catalogMap.get(item.catalogItemId) ?? "Unknown",
+        isExpired,
+        isExpiringSoon,
+      };
+    });
+  }, []);
+
+  const filteredRows = useMemo(() => {
+    if (!search.trim()) return rows;
+    const needle = search.toLowerCase();
+    const byText = rows.filter((row) =>
+      [row.itemName, row.location, row.notes ?? ""].some((field) =>
+        field && String(field).toLowerCase().includes(needle)
+      )
+    );
+
+    const byStatus = byText.filter((row) => {
+      if (statusFilter === "all") return true;
+      if (statusFilter === "expired") return row.isExpired;
+      if (statusFilter === "soon") return row.isExpiringSoon && !row.isExpired;
+      return !row.isExpired && !row.isExpiringSoon; // fresh
+    });
+
+    return byStatus;
+  }, [rows, search, statusFilter]);
+
+  const columns: Column<InventoryRow>[] = [
+    {
+      id: "itemName",
+      label: "Item Name",
+      sortable: true,
+      sortValue: (row) => row.itemName,
+    },
+    {
+      id: "location",
+      label: "Location",
+      sortable: true,
+      sortValue: (row) => row.location,
+    },
+    {
+      id: "quantity",
+      label: "Quantity",
+      align: "right",
+      sortable: true,
+      sortValue: (row) => row.quantity,
+    },
+    {
+      id: "expirationDate",
+      label: "Expiration",
+      sortable: true,
+      sortValue: (row) => (row.expirationDate ? new Date(row.expirationDate) : null),
+      render: (row) => {
+        if (!row.expirationDate) return "-";
+        const color = row.isExpired ? "error.main" : row.isExpiringSoon ? "warning.main" : "text.primary";
+        const weight = row.isExpired || row.isExpiringSoon ? 700 : 400;
+        const title = row.isExpired ? "Expired" : row.isExpiringSoon ? "Expiring soon" : "";
+        return (
+          <Tooltip title={title}>
+            <Typography sx={{ color, fontWeight: weight }}>
+              {row.expirationDate}
+            </Typography>
+          </Tooltip>
+        );
+      },
+    },
+    {
+      id: "notes",
+      label: "Notes",
+      render: (row) => row.notes || "-",
+    },
+    {
+      id: "actions",
+      label: "Actions",
+      align: "center",
+      render: (row) => (
+        <Box>
+          <Tooltip title="Edit">
+            <IconButton size="small" onClick={() => alert(`Edit item: ${row.itemName}`)}>
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete">
+            <IconButton
+              size="small"
+              color="error"
+              onClick={() => alert(`Delete item: ${row.itemName}`)}
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      ),
+    },
+  ];
 
   return (
     <Box>
-      {/* Header */}
       <Box className="flex items-center justify-between mb-4">
         <Typography variant="h6" color="primary">
           Inventory Items
@@ -108,170 +280,51 @@ const InventoryTab: React.FC = () => {
           color="primary"
           startIcon={<AddIcon />}
           sx={{
-            textTransform: 'none',
+            textTransform: "none",
             fontWeight: 500,
             boxShadow: 2,
             px: 2.5,
             py: 1,
             borderRadius: 2,
           }}
-          onClick={() => alert('Open add item modal')}
+          onClick={() => alert("Open add item modal")}
         >
           Add New Item
         </Button>
       </Box>
 
-      {/* Table */}
-      <Paper elevation={2} sx={{ overflowX: 'auto' }}>
-        <Table size="small">
-          <TableHead>
-            <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-              <TableCell>Item Name</TableCell>
+      <TableFilters
+        searchValue={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Search name, location, notes"
+        elevation={0}
+        selectFilters={[
+          {
+            label: "Status",
+            value: statusFilter,
+            onChange: (val) => setStatusFilter(val as "all" | "expired" | "soon" | "fresh"),
+            options: [
+              { value: "all", label: "All" },
+              { value: "expired", label: "Expired" },
+              { value: "soon", label: "Expiring soon" },
+              { value: "fresh", label: "Fresh" },
+            ],
+          },
+        ]}
+      />
 
-              <TableCell
-                sortDirection={sortField === 'location' ? sortOrder : false}
-              >
-                <Tooltip title="Click to sort by location" arrow>
-                  <TableSortLabel
-                    active={sortField === 'location'}
-                    direction={sortField === 'location' ? sortOrder : 'asc'}
-                    onClick={() => handleSort('location')}
-                  >
-                    Location
-                  </TableSortLabel>
-                </Tooltip>
-              </TableCell>
-
-              <TableCell
-                sortDirection={sortField === 'quantity' ? sortOrder : false}
-              >
-                <Tooltip title="Click to sort by quantity" arrow>
-                  <TableSortLabel
-                    active={sortField === 'quantity'}
-                    direction={sortField === 'quantity' ? sortOrder : 'asc'}
-                    onClick={() => handleSort('quantity')}
-                  >
-                    Quantity
-                  </TableSortLabel>
-                </Tooltip>
-              </TableCell>
-
-              <TableCell
-                sortDirection={
-                  sortField === 'expirationDate' ? sortOrder : false
-                }
-              >
-                <Tooltip title="Click to sort by expiration" arrow>
-                  <TableSortLabel
-                    active={sortField === 'expirationDate'}
-                    direction={
-                      sortField === 'expirationDate' ? sortOrder : 'asc'
-                    }
-                    onClick={() => handleSort('expirationDate')}
-                  >
-                    Expiration
-                  </TableSortLabel>
-                </Tooltip>
-              </TableCell>
-
-              <TableCell>Notes</TableCell>
-              <TableCell align="center">Actions</TableCell>
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {paginatedItems.map((item, index) => {
-              const itemName = catalogMap.get(item.catalogItemId) ?? 'Unknown';
-              const expDate = item.expirationDate
-                ? new Date(item.expirationDate)
-                : null;
-              const isExpired = expDate ? expDate < today : false;
-              const isExpiringSoon =
-                expDate && !isExpired
-                  ? expDate.getTime() - today.getTime() <
-                    7 * 24 * 60 * 60 * 1000
-                  : false;
-
-              return (
-                <TableRow
-                  key={item.id}
-                  sx={{
-                    backgroundColor: isExpired
-                      ? '#ffebee'
-                      : index % 2 === 0
-                        ? 'white'
-                        : '#fafafa',
-                  }}
-                >
-                  <TableCell>{itemName}</TableCell>
-                  <TableCell>{item.location}</TableCell>
-                  <TableCell>{item.quantity}</TableCell>
-                  <TableCell>
-                    {item.expirationDate ? (
-                      <Tooltip
-                        title={
-                          isExpired
-                            ? 'Expired'
-                            : isExpiringSoon
-                              ? 'Expiring soon'
-                              : ''
-                        }
-                      >
-                        <Typography
-                          color={
-                            isExpired
-                              ? 'error'
-                              : isExpiringSoon
-                                ? 'orange'
-                                : 'textPrimary'
-                          }
-                          fontWeight={
-                            isExpired || isExpiringSoon ? 'bold' : 'normal'
-                          }
-                        >
-                          {item.expirationDate}
-                        </Typography>
-                      </Tooltip>
-                    ) : (
-                      '—'
-                    )}
-                  </TableCell>
-                  <TableCell>{item.notes || '—'}</TableCell>
-                  <TableCell align="center">
-                    <Tooltip title="Edit">
-                      <IconButton
-                        size="small"
-                        onClick={() => alert(`Edit item: ${itemName}`)}
-                      >
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Delete">
-                      <IconButton
-                        size="small"
-                        color="error"
-                        onClick={() => alert(`Delete item: ${itemName}`)}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-
-        {/* Pagination */}
-        <TablePagination
-          component="div"
-          count={sortedItems.length}
-          page={page}
-          onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
-          rowsPerPageOptions={[rowsPerPage]}
-        />
-      </Paper>
+      <DataTable
+        rows={filteredRows}
+        columns={columns}
+        initialSort={{ columnId: "expirationDate", order: "asc" }}
+        defaultRowsPerPage={10}
+        rowsPerPageOptions={[10]}
+        getRowId={(row) => row.id}
+        getRowProps={(row) => ({
+          sx: row.isExpired ? { backgroundColor: "#ffebee" } : {},
+        })}
+        stripedColors={["white", "#fafafa"]}
+      />
     </Box>
   );
 };

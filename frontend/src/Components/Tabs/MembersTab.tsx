@@ -1,83 +1,87 @@
-import React, { useState } from 'react';
-import {
-  Avatar,
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Paper,
-  TablePagination,
-  Grid,
-} from '@mui/material';
+import React, { useMemo } from "react";
+import { Avatar, Box, Typography } from "@mui/material";
+import DataTable from "../Common/DataTable";
+import TableFilters from "../Common/TableFilters";
+import type { Column } from "../Common/DataTable";
 
 interface MembersTabProps {
   memberIds: string[];
 }
 
-const MembersTab: React.FC<MembersTabProps> = ({ memberIds }) => {
-  const [page, setPage] = useState(0);
-  const rowsPerPage = 12;
+type MemberRow = {
+  id: string;
+  username: string;
+  email: string;
+};
 
-  const paginated = memberIds.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
+const MembersTab: React.FC<MembersTabProps> = ({ memberIds }) => {
+  const [search, setSearch] = React.useState("");
+
+  const rows: MemberRow[] = useMemo(
+    () =>
+      memberIds.map((id, index) => {
+        const username = `member_${index + 1}`;
+        const email = `${username}@homeshelf.app`;
+        return { id, username, email };
+      }),
+    [memberIds]
   );
 
-  const handleChangePage = (_: unknown, newPage: number) => {
-    setPage(newPage);
-  };
+  const filtered = useMemo(() => {
+    if (!search.trim()) return rows;
+    const needle = search.toLowerCase();
+    return rows.filter(
+      (row) =>
+        row.username.toLowerCase().includes(needle) ||
+        row.email.toLowerCase().includes(needle)
+    );
+  }, [rows, search]);
+
+  const columns: Column<MemberRow>[] = [
+    {
+      id: "avatar",
+      label: "Avatar",
+      width: 80,
+      render: (row) => <Avatar sx={{ width: 40, height: 40 }}>{row.username[0].toUpperCase()}</Avatar>,
+    },
+    {
+      id: "username",
+      label: "Username",
+      sortable: true,
+      sortValue: (row) => row.username,
+      render: (row) => row.username,
+    },
+    {
+      id: "email",
+      label: "Email",
+      sortable: true,
+      sortValue: (row) => row.email,
+      render: (row) => row.email,
+    },
+  ];
 
   return (
     <Box>
-      <Typography variant="h6" color="primary" mb={2}>
+      <Typography variant="h6" color="primary" mb={4}>
         Home Members
       </Typography>
 
-      <Grid container spacing={2}>
-        {paginated.map((id, index) => (
-          <Grid key={id}>
-            <Card
-              elevation={2}
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                p: 2,
-                gap: 2,
-                height: 100,
-                maxWidth: 360,
-                backgroundColor: index % 2 === 0 ? 'white' : '#fafafa',
-                mx: 'auto',
-              }}
-            >
-              <Avatar sx={{ width: 48, height: 48 }}>
-                {id[0].toUpperCase()}
-              </Avatar>
-              <CardContent sx={{ p: 0 }}>
-                <Typography variant="body2" color="textSecondary">
-                  User ID: {id}
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Username: <i>coming soon</i>
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Email: <i>coming soon</i>
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+      <TableFilters
+        searchValue={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Search username or email"
+        elevation={0}
+      />
 
-      <Paper elevation={0} sx={{ mt: 2 }}>
-        <TablePagination
-          component="div"
-          count={memberIds.length}
-          page={page}
-          onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
-          rowsPerPageOptions={[rowsPerPage]}
-        />
-      </Paper>
+      <DataTable
+        rows={filtered}
+        columns={columns}
+        defaultRowsPerPage={12}
+        rowsPerPageOptions={[12]}
+        getRowId={(row) => row.id}
+        emptyMessage="No members yet. Invite someone to get started."
+        stripedColors={["white", "#fafafa"]}
+      />
     </Box>
   );
 };

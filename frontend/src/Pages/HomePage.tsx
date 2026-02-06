@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Tabs, Tab, Box, Typography, Button, Divider } from '@mui/material';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import { Tabs, Tab, Box, Divider } from '@mui/material';
 import InventoryTab from '../Components/Tabs/InventoryTab';
 import CatalogTab from '../Components/Tabs/CatalogTab';
 import MembersTab from '../Components/Tabs/MembersTab';
@@ -80,14 +79,5 @@ const HomePage: React.FC = () => {
     </div>
   );
 };
-
-const Placeholder: React.FC<{ title: string }> = ({ title }) => (
-  <div className="text-center py-12 text-gray-500">
-    <Typography variant="h6">{title} goes here.</Typography>
-    <Typography variant="body2">
-      This is a placeholder section for the {title.toLowerCase()} tab.
-    </Typography>
-  </div>
-);
 
 export default HomePage;

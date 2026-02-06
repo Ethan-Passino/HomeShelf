@@ -7,22 +7,13 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  Divider,
   FormControl,
   IconButton,
-  InputAdornment,
   InputLabel,
   MenuItem,
   Paper,
   Select,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TablePagination,
-  TableRow,
-  TableSortLabel,
   TextField,
   Tooltip,
   Typography,
@@ -31,7 +22,9 @@ import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import SearchIcon from '@mui/icons-material/Search';
+import DataTable from '../Common/DataTable';
+import TableFilters from '../Common/TableFilters';
+import type { Column } from '../Common/DataTable';
 import type { CatalogItem } from '../../types/catalogItem';
 
 const initialCatalog: CatalogItem[] = [
@@ -149,22 +142,24 @@ const formatDate = (date: Date) =>
     minute: '2-digit',
   });
 
-type SortField = 'tags' | 'createdBy' | 'createdAt' | 'updatedAt';
-type SortOrder = 'asc' | 'desc';
+type CatalogFormState = {
+  name: string;
+  description: string;
+  tags: string;
+  imageUrl: string;
+  createdBy: string;
+  homeId: string;
+};
 
 const CatalogTab: React.FC = () => {
   const [catalog, setCatalog] = useState<CatalogItem[]>(initialCatalog);
-  const [page, setPage] = useState(0);
-  const rowsPerPage = 7;
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [sortField, setSortField] = useState<SortField>('createdAt');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
   const [search, setSearch] = useState('');
   const [selectedHome, setSelectedHome] = useState<string>('all');
-  const [activeTags, setActiveTags] = useState<string[]>([]);
+  const [selectedTag, setSelectedTag] = useState<string>('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editing, setEditing] = useState<CatalogItem | null>(null);
-  const [formState, setFormState] = useState({
+  const [formState, setFormState] = useState<CatalogFormState>({
     name: '',
     description: '',
     tags: '',
@@ -184,28 +179,8 @@ const CatalogTab: React.FC = () => {
     return Array.from(tagSet).sort();
   }, [catalog]);
 
-  const handleChangePage = (_: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
   const handleImageClick = (url: string) => {
     setSelectedImage(url);
-  };
-
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
-    } else {
-      setSortField(field);
-      setSortOrder('asc');
-    }
-  };
-
-  const toggleTag = (tag: string) => {
-    setActiveTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-    );
-    setPage(0);
   };
 
   const openCreateModal = () => {
@@ -242,7 +217,6 @@ const CatalogTab: React.FC = () => {
     );
     if (confirmed) {
       setCatalog((prev) => prev.filter((item) => item.id !== itemId));
-      setPage(0);
     }
   };
 
@@ -278,7 +252,6 @@ const CatalogTab: React.FC = () => {
 
     setIsModalOpen(false);
     setEditing(null);
-    setPage(0);
   };
 
   const filteredItems = useMemo(() => {
@@ -293,49 +266,11 @@ const CatalogTab: React.FC = () => {
         selectedHome === 'all' || item.homeId === selectedHome;
 
       const matchesTags =
-        activeTags.length === 0 ||
-        activeTags.every((tag) => item.tags?.includes(tag));
+        selectedTag === 'all' || (item.tags && item.tags.includes(selectedTag));
 
       return matchesSearch && matchesHome && matchesTags;
     });
-  }, [catalog, search, selectedHome, activeTags]);
-
-  const sortedItems = [...filteredItems].sort((a, b) => {
-    let aVal: string | number = '';
-    let bVal: string | number = '';
-
-    switch (sortField) {
-      case 'tags':
-        aVal = a.tags?.[0] || '';
-        bVal = b.tags?.[0] || '';
-        break;
-      case 'createdBy':
-        aVal = a.createdBy.toLowerCase();
-        bVal = b.createdBy.toLowerCase();
-        break;
-      case 'createdAt':
-        aVal = a.createdAt.getTime();
-        bVal = b.createdAt.getTime();
-        break;
-      case 'updatedAt':
-        aVal = a.updatedAt.getTime();
-        bVal = b.updatedAt.getTime();
-        break;
-    }
-
-    if (typeof aVal === 'number' && typeof bVal === 'number') {
-      return sortOrder === 'asc' ? aVal - bVal : bVal - aVal;
-    } else {
-      return sortOrder === 'asc'
-        ? String(aVal).localeCompare(String(bVal))
-        : String(bVal).localeCompare(String(aVal));
-    }
-  });
-
-  const paginatedItems = sortedItems.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
-  );
+  }, [catalog, search, selectedHome, selectedTag]);
 
   const totalCatalog = catalog.length;
   const filteredCount = filteredItems.length;
@@ -346,10 +281,117 @@ const CatalogTab: React.FC = () => {
     return item.updatedAt > latest ? item.updatedAt : latest;
   }, null);
 
+  const columns: Column<CatalogItem>[] = [
+    {
+      id: 'image',
+      label: 'Image',
+      width: 80,
+      render: (item) => (
+        <Tooltip title={item.imageUrl ? 'Click to expand' : ''}>
+          <span>
+            <IconButton
+              onClick={() => item.imageUrl && handleImageClick(item.imageUrl)}
+              disabled={!item.imageUrl}
+              size="small"
+            >
+              {item.imageUrl ? (
+                <Avatar
+                  alt={item.name}
+                  src={item.imageUrl}
+                  variant="circular"
+                  sx={{ width: 40, height: 40 }}
+                />
+              ) : (
+                <Avatar sx={{ width: 40, height: 40 }}>{item.name[0]}</Avatar>
+              )}
+            </IconButton>
+          </span>
+        </Tooltip>
+      ),
+    },
+    {
+      id: 'name',
+      label: 'Name',
+      sortable: true,
+      sortValue: (item) => item.name,
+    },
+    {
+      id: 'homeId',
+      label: 'Home',
+      sortable: true,
+      sortValue: (item) => item.homeId,
+    },
+    {
+      id: 'description',
+      label: 'Description',
+      render: (item) =>
+        item.description || <span style={{ color: '#888' }}>-</span>,
+    },
+    {
+      id: 'tags',
+      label: 'Tags',
+      sortable: true,
+      sortValue: (item) => item.tags?.[0] ?? '',
+      render: (item) =>
+        item.tags?.length ? (
+          <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+            {item.tags.map((tag) => (
+              <Chip key={tag} label={tag} size="small" />
+            ))}
+          </Box>
+        ) : (
+          <span style={{ color: '#888' }}>-</span>
+        ),
+    },
+    {
+      id: 'createdBy',
+      label: 'Created By',
+      sortable: true,
+      sortValue: (item) => item.createdBy.toLowerCase(),
+    },
+    {
+      id: 'createdAt',
+      label: 'Created At',
+      sortable: true,
+      sortValue: (item) => item.createdAt,
+      render: (item) => formatDate(item.createdAt),
+    },
+    {
+      id: 'updatedAt',
+      label: 'Updated At',
+      sortable: true,
+      sortValue: (item) => item.updatedAt,
+      render: (item) => formatDate(item.updatedAt),
+    },
+    {
+      id: 'actions',
+      label: 'Actions',
+      align: 'center',
+      render: (item) => (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'center' }}>
+          <Tooltip title="Edit">
+            <IconButton size="small" onClick={() => openEditModal(item)}>
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete">
+            <IconButton
+              size="small"
+              color="error"
+              onClick={() => handleDelete(item.id)}
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      ),
+    },
+  ];
+
   return (
     <Box>
       {/* Header */}
-      <Box className="flex items-center justify-between mb-3 flex-wrap gap-3">
+      <Box className="flex items-center justify-between mb-4 flex-wrap gap-3">
         <Typography variant="h6" color="primary">
           Catalog Items
         </Typography>
@@ -398,242 +440,35 @@ const CatalogTab: React.FC = () => {
       </Stack>
 
       {/* Filters */}
-      <Paper
-        elevation={0}
-        sx={{
-          p: 2,
-          border: '1px solid #e0e0e0',
-          borderRadius: 2,
-          mb: 2,
+      <TableFilters
+        searchValue={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Search name or description"
+        homeFilter={{
+          options: availableHomes,
+          value: selectedHome,
+          onChange: setSelectedHome,
         }}
-      >
-        <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} mb={2}>
-          <TextField
-            label="Search name or description"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(0);
-            }}
-            size="small"
-            fullWidth
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon fontSize="small" />
-                </InputAdornment>
-              ),
-            }}
-          />
+        selectFilters={[
+          {
+            label: 'Tag',
+            value: selectedTag,
+            onChange: (val) => setSelectedTag(val),
+            options: [{ value: 'all', label: 'All tags' }, ...availableTags.map((tag) => ({ value: tag, label: tag }))],
+          },
+        ]}
+      />
 
-          <FormControl size="small" sx={{ minWidth: 180 }}>
-            <InputLabel>Home</InputLabel>
-            <Select
-              label="Home"
-              value={selectedHome}
-              onChange={(e) => {
-                setSelectedHome(e.target.value);
-                setPage(0);
-              }}
-            >
-              <MenuItem value="all">All homes</MenuItem>
-              {availableHomes.map((homeId) => (
-                <MenuItem key={homeId} value={homeId}>
-                  {homeId}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Stack>
-
-        <Divider sx={{ my: 1 }} />
-
-        <Typography variant="body2" color="textSecondary" mb={1}>
-          Filter by tag
-        </Typography>
-        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-          {availableTags.length === 0 && (
-            <Typography variant="body2" color="textSecondary">
-              No tags yet.
-            </Typography>
-          )}
-          {availableTags.map((tag) => {
-            const isActive = activeTags.includes(tag);
-            return (
-              <Chip
-                key={tag}
-                label={tag}
-                variant={isActive ? 'filled' : 'outlined'}
-                color={isActive ? 'primary' : 'default'}
-                onClick={() => toggleTag(tag)}
-                clickable
-                size="small"
-              />
-            );
-          })}
-          {activeTags.length > 0 && (
-            <Button
-              size="small"
-              onClick={() => setActiveTags([])}
-              sx={{ textTransform: 'none' }}
-            >
-              Clear tags
-            </Button>
-          )}
-        </Stack>
-      </Paper>
-
-      {/* Table */}
-      <Paper elevation={2} sx={{ overflowX: 'auto' }}>
-        <Table size="small">
-          <TableHead>
-            <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-              <TableCell>Image</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Home</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell
-                sortDirection={sortField === 'tags' ? sortOrder : false}
-              >
-                <TableSortLabel
-                  active={sortField === 'tags'}
-                  direction={sortField === 'tags' ? sortOrder : 'asc'}
-                  onClick={() => handleSort('tags')}
-                >
-                  Tags
-                </TableSortLabel>
-              </TableCell>
-              <TableCell
-                sortDirection={sortField === 'createdBy' ? sortOrder : false}
-              >
-                <TableSortLabel
-                  active={sortField === 'createdBy'}
-                  direction={sortField === 'createdBy' ? sortOrder : 'asc'}
-                  onClick={() => handleSort('createdBy')}
-                >
-                  Created By
-                </TableSortLabel>
-              </TableCell>
-              <TableCell
-                sortDirection={sortField === 'createdAt' ? sortOrder : false}
-              >
-                <TableSortLabel
-                  active={sortField === 'createdAt'}
-                  direction={sortField === 'createdAt' ? sortOrder : 'asc'}
-                  onClick={() => handleSort('createdAt')}
-                >
-                  Created At
-                </TableSortLabel>
-              </TableCell>
-              <TableCell
-                sortDirection={sortField === 'updatedAt' ? sortOrder : false}
-              >
-                <TableSortLabel
-                  active={sortField === 'updatedAt'}
-                  direction={sortField === 'updatedAt' ? sortOrder : 'asc'}
-                  onClick={() => handleSort('updatedAt')}
-                >
-                  Updated At
-                </TableSortLabel>
-              </TableCell>
-              <TableCell align="center">Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {paginatedItems.map((item, index) => (
-              <TableRow
-                key={item.id}
-                sx={{
-                  backgroundColor: index % 2 === 0 ? 'white' : '#fafafa',
-                }}
-              >
-                <TableCell>
-                  <Tooltip title={item.imageUrl ? 'Click to expand' : ''}>
-                    <span>
-                      <IconButton
-                        onClick={() =>
-                          item.imageUrl && handleImageClick(item.imageUrl)
-                        }
-                        disabled={!item.imageUrl}
-                        size="small"
-                      >
-                        {item.imageUrl ? (
-                          <Avatar
-                            alt={item.name}
-                            src={item.imageUrl}
-                            variant="circular"
-                            sx={{ width: 40, height: 40 }}
-                          />
-                        ) : (
-                          <Avatar sx={{ width: 40, height: 40 }}>
-                            {item.name[0]}
-                          </Avatar>
-                        )}
-                      </IconButton>
-                    </span>
-                  </Tooltip>
-                </TableCell>
-                <TableCell>{item.name}</TableCell>
-                <TableCell>{item.homeId}</TableCell>
-                <TableCell>
-                  {item.description || <span style={{ color: '#888' }}>-</span>}
-                </TableCell>
-                <TableCell>
-                  {item.tags?.length ? (
-                    <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
-                      {item.tags.map((tag) => (
-                        <Chip key={tag} label={tag} size="small" />
-                      ))}
-                    </Box>
-                  ) : (
-                    <span style={{ color: '#888' }}>-</span>
-                  )}
-                </TableCell>
-                <TableCell>{item.createdBy}</TableCell>
-                <TableCell>{formatDate(item.createdAt)}</TableCell>
-                <TableCell>{formatDate(item.updatedAt)}</TableCell>
-                <TableCell align="center">
-                  <Tooltip title="Edit">
-                    <IconButton
-                      size="small"
-                      onClick={() => openEditModal(item)}
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Delete">
-                    <IconButton
-                      size="small"
-                      color="error"
-                      onClick={() => handleDelete(item.id)}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-
-        {paginatedItems.length === 0 && (
-          <Box sx={{ p: 3 }}>
-            <Typography variant="body2" color="textSecondary">
-              No catalog items match your filters yet.
-            </Typography>
-          </Box>
-        )}
-
-        {/* Pagination */}
-        <TablePagination
-          component="div"
-          count={sortedItems.length}
-          page={page}
-          onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
-          rowsPerPageOptions={[rowsPerPage]}
-        />
-      </Paper>
+      <DataTable
+        rows={filteredItems}
+        columns={columns}
+        initialSort={{ columnId: 'updatedAt', order: 'asc' }}
+        defaultRowsPerPage={7}
+        rowsPerPageOptions={[7]}
+        getRowId={(row) => row.id}
+        emptyMessage="No catalog items match your filters yet."
+        stripedColors={['white', '#fafafa']}
+      />
 
       {/* Image Modal */}
       <Dialog
