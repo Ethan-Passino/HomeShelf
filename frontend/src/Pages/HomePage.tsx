@@ -57,8 +57,8 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-green-400 px-4 py-12 text-white">
-      <div className="max-w-6xl mx-auto bg-white/90 backdrop-blur-md text-gray-800 rounded-2xl shadow-lg p-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-green-400 px-4 py-8 sm:py-12 lg:py-14 text-white flex justify-center items-start">
+      <div className="max-w-6xl w-full bg-white/90 backdrop-blur-md text-gray-800 rounded-2xl shadow-lg p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
