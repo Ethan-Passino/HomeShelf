@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Button,
   Chip,
@@ -12,8 +12,8 @@ import {
   Stack,
   TextField,
   Typography,
-} from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
+} from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 
 type HomeFilterProps = {
   options: string[];
@@ -52,7 +52,7 @@ export type TableFiltersProps = {
 const TableFilters: React.FC<TableFiltersProps> = ({
   searchValue,
   onSearchChange,
-  searchPlaceholder = "Search",
+  searchPlaceholder = 'Search',
   homeFilter,
   tagFilter,
   elevation = 0,
@@ -60,19 +60,23 @@ const TableFilters: React.FC<TableFiltersProps> = ({
 }) => {
   const showTags = Boolean(tagFilter && tagFilter.options.length);
   const showHome = Boolean(homeFilter);
-   const showSelects = selectFilters.length > 0;
+  const showSelects = selectFilters.length > 0;
 
   return (
     <Paper
       elevation={elevation}
       sx={{
         p: 2,
-        border: "1px solid #e0e0e0",
+        border: '1px solid #e0e0e0',
         borderRadius: 2,
         mb: 2,
       }}
     >
-      <Stack direction={{ xs: "column", md: "row" }} spacing={2} mb={showTags ? 2 : 0}>
+      <Stack
+        direction={{ xs: 'column', md: 'row' }}
+        spacing={2}
+        mb={showTags ? 2 : 0}
+      >
         <TextField
           label={searchPlaceholder}
           value={searchValue}
@@ -90,9 +94,9 @@ const TableFilters: React.FC<TableFiltersProps> = ({
 
         {showHome && homeFilter && (
           <FormControl size="small" sx={{ minWidth: 180 }}>
-            <InputLabel>{homeFilter.label ?? "Home"}</InputLabel>
+            <InputLabel>{homeFilter.label ?? 'Home'}</InputLabel>
             <Select
-              label={homeFilter.label ?? "Home"}
+              label={homeFilter.label ?? 'Home'}
               value={homeFilter.value}
               onChange={(e) => homeFilter.onChange(e.target.value)}
             >
@@ -129,7 +133,7 @@ const TableFilters: React.FC<TableFiltersProps> = ({
         <>
           <Divider sx={{ my: 1 }} />
           <Typography variant="body2" color="textSecondary" mb={1}>
-            {tagFilter.label ?? "Filter by tag"}
+            {tagFilter.label ?? 'Filter by tag'}
           </Typography>
           <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
             {tagFilter.options.map((tag) => {
@@ -138,8 +142,8 @@ const TableFilters: React.FC<TableFiltersProps> = ({
                 <Chip
                   key={tag}
                   label={tag}
-                  variant={isActive ? "filled" : "outlined"}
-                  color={isActive ? "primary" : "default"}
+                  variant={isActive ? 'filled' : 'outlined'}
+                  color={isActive ? 'primary' : 'default'}
                   onClick={() => tagFilter.onToggle(tag)}
                   clickable
                   size="small"
@@ -150,7 +154,7 @@ const TableFilters: React.FC<TableFiltersProps> = ({
               <Button
                 size="small"
                 onClick={tagFilter.onClear}
-                sx={{ textTransform: "none" }}
+                sx={{ textTransform: 'none' }}
               >
                 Clear tags
               </Button>

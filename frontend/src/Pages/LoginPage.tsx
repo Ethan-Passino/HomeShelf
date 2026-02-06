@@ -1,39 +1,60 @@
-import { Link } from 'react-router-dom';
+import { useState, type FormEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { login } from '../api/auth';
 
 const LoginPage = () => {
-  const handleGoogleLogin = async () => {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleGoogleLogin = () => {
+    setError('Google sign-in is not wired up yet.');
+  };
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
     try {
-      console.log('Google user:test');
-      // TODO: redirect or update app state
-    } catch (error) {
-      console.error('Google login error:', error);
+      await login({ email, password });
+      navigate('/dashboard');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Login failed';
+      setError(message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-green-400 px-4 py-10">
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-6 sm:p-8 relative">
-        {/* Back to Home Link */}
         <Link
           to="/"
           className="absolute top-4 left-4 text-sm text-blue-600 hover:underline"
         >
-          ← Back to Home
+          {'<-'} Back to Home
         </Link>
         <br />
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
           Login
         </h2>
 
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Email
             </label>
             <input
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="you@example.com"
+              required
             />
           </div>
 
@@ -43,8 +64,11 @@ const LoginPage = () => {
             </label>
             <input
               type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="••••••••"
+              placeholder="********"
+              required
             />
           </div>
 
@@ -57,11 +81,14 @@ const LoginPage = () => {
             </Link>
           </div>
 
+          {error && <p className="text-sm text-red-600 font-medium">{error}</p>}
+
           <button
             type="submit"
-            className="w-full py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition"
+            disabled={loading}
+            className="w-full py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            Login
+            {loading ? 'Signing in...' : 'Login'}
           </button>
 
           <div className="relative mt-6">
@@ -88,7 +115,7 @@ const LoginPage = () => {
         </form>
 
         <p className="text-sm text-center text-gray-600 mt-6">
-          Don’t have an account?{' '}
+          Don't have an account?{' '}
           <Link to="/register" className="text-blue-600 hover:underline">
             Register
           </Link>

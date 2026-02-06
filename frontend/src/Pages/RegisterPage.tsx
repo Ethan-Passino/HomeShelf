@@ -1,14 +1,19 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, type FormEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { register } from '../api/auth';
 
 const RegisterPage = () => {
+  const navigate = useNavigate();
+  const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setErrorMessage('');
 
     if (password !== confirmPassword) {
       setErrorMessage('Passwords do not match.');
@@ -16,31 +21,29 @@ const RegisterPage = () => {
     }
 
     try {
-      console.log('✅ User registered');
-      // TODO: redirect or update app state
+      setLoading(true);
+      await register({ email, password, displayName });
+      navigate('/dashboard');
     } catch (error) {
-      console.error('❌ Registration error:', error);
+      const message = error instanceof Error ? error.message : 'Sign up failed';
+      setErrorMessage(message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleGoogleSignup = async () => {
-    try {
-      console.log('✅ Google user:');
-      // TODO: redirect or update app state
-    } catch (error) {
-      console.error('❌ Google signup error:', error);
-    }
+  const handleGoogleSignup = () => {
+    setErrorMessage('Google sign-up is not wired up yet.');
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-green-400 px-4 py-10">
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-6 sm:p-8 relative">
-        {/* Back to Home Link */}
         <Link
           to="/"
           className="absolute top-4 left-4 text-sm text-blue-600 hover:underline"
         >
-          ← Back to Home
+          {'<-'} Back to Home
         </Link>
         <br />
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
@@ -48,6 +51,20 @@ const RegisterPage = () => {
         </h2>
 
         <form onSubmit={handleRegister} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Display name
+            </label>
+            <input
+              type="text"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Alex Smith"
+              required
+            />
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Email
@@ -71,8 +88,9 @@ const RegisterPage = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="••••••••"
+              placeholder="********"
               required
+              minLength={8}
             />
           </div>
 
@@ -85,7 +103,7 @@ const RegisterPage = () => {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="••••••••"
+              placeholder="********"
               required
             />
           </div>
@@ -96,9 +114,10 @@ const RegisterPage = () => {
 
           <button
             type="submit"
-            className="w-full py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition"
+            disabled={loading}
+            className="w-full py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            Sign Up
+            {loading ? 'Creating account...' : 'Sign Up'}
           </button>
 
           <div className="relative mt-6">

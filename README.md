@@ -27,6 +27,7 @@
 ## 🛠 Tech Stack
 
 ### Frontend
+
 - [React](https://reactjs.org/)
 - [TypeScript](https://www.typescriptlang.org/)
 - [Tailwind CSS](https://tailwindcss.com/)
@@ -35,7 +36,5 @@
 - [MUI](https://mui.com/)
 
 ### Backend
+
 - [Firebase](https://firebase.google.com/)
-
-
-

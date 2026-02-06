@@ -17,10 +17,12 @@ export const userSchema = z.object({
   homes: z.array(membershipSchema).default([]),
 });
 
-export const createUserSchema = userSchema.omit({ id: true, createdAt: true, updatedAt: true }).extend({
-  createdAt: z.string().default(() => new Date().toISOString()),
-  updatedAt: z.string().default(() => new Date().toISOString()),
-});
+export const createUserSchema = userSchema
+  .omit({ id: true, createdAt: true, updatedAt: true })
+  .extend({
+    createdAt: z.string().default(() => new Date().toISOString()),
+    updatedAt: z.string().default(() => new Date().toISOString()),
+  });
 
 export const updateUserSchema = userSchema.partial().required({ id: true });
 
