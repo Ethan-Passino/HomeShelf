@@ -4,57 +4,56 @@ import DataTable from '../Common/DataTable';
 import TableFilters from '../Common/TableFilters';
 import type { Column } from '../Common/DataTable';
 import RowCard from '../Common/RowCard';
+import type { User } from '../../../../backend/src/schemas/user';
 
-interface MembersTabProps {
-  memberIds: string[];
-}
-
-type MemberRow = {
-  id: string;
-  username: string;
-  email: string;
+export type MemberWithRole = User & {
+  role: 'owner' | 'admin' | 'member';
+  status: 'invited' | 'active';
 };
 
-const MembersTab: React.FC<MembersTabProps> = ({ memberIds }) => {
+interface MembersTabProps {
+  members: MemberWithRole[];
+}
+
+const MembersTab: React.FC<MembersTabProps> = ({ members }) => {
   const [search, setSearch] = React.useState('');
 
-  const rows: MemberRow[] = useMemo(
-    () =>
-      memberIds.map((id, index) => {
-        const username = `member_${index + 1}`;
-        const email = `${username}@homeshelf.app`;
-        return { id, username, email };
-      }),
-    [memberIds]
-  );
+  const rows: MemberWithRole[] = useMemo(() => members, [members]);
 
   const filtered = useMemo(() => {
     if (!search.trim()) return rows;
     const needle = search.toLowerCase();
     return rows.filter(
       (row) =>
-        row.username.toLowerCase().includes(needle) ||
+        row.displayName.toLowerCase().includes(needle) ||
         row.email.toLowerCase().includes(needle)
     );
   }, [rows, search]);
 
-  const columns: Column<MemberRow>[] = [
+  const columns: Column<MemberWithRole>[] = [
     {
       id: 'avatar',
       label: 'Avatar',
       width: 80,
       render: (row) => (
         <Avatar sx={{ width: 40, height: 40 }}>
-          {row.username[0].toUpperCase()}
+          {row.displayName[0]?.toUpperCase() ?? '?'}
         </Avatar>
       ),
     },
     {
-      id: 'username',
-      label: 'Username',
+      id: 'displayName',
+      label: 'Name',
       sortable: true,
-      sortValue: (row) => row.username,
-      render: (row) => row.username,
+      sortValue: (row) => row.displayName,
+      render: (row) => row.displayName,
+    },
+    {
+      id: 'role',
+      label: 'Role',
+      sortable: true,
+      sortValue: (row) => row.role,
+      render: (row) => row.role,
     },
     {
       id: 'email',
@@ -74,7 +73,7 @@ const MembersTab: React.FC<MembersTabProps> = ({ memberIds }) => {
       <TableFilters
         searchValue={search}
         onSearchChange={setSearch}
-        searchPlaceholder="Search username or email"
+        searchPlaceholder="Search name or email"
         elevation={0}
       />
 
@@ -88,14 +87,20 @@ const MembersTab: React.FC<MembersTabProps> = ({ memberIds }) => {
         stripedColors={['white', '#fafafa']}
         renderCard={(row) => (
           <RowCard
-            overline="Member"
+            overline={
+              row.role === 'owner'
+                ? 'Owner'
+                : row.role === 'admin'
+                  ? 'Admin'
+                  : 'Member'
+            }
             media={
               <Avatar sx={{ width: 48, height: 48 }}>
-                {row.username[0].toUpperCase()}
+                {row.displayName[0]?.toUpperCase() ?? '?'}
               </Avatar>
             }
-            title={row.username}
-            subtitle={row.email}
+            title={row.displayName}
+            subtitle={`${row.email} • ${row.status === 'invited' ? 'Invited' : 'Active'}`}
           />
         )}
         cardBreakpoint="sm"

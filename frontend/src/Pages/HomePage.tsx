@@ -11,6 +11,7 @@ import {
 import InventoryTab from '../Components/Tabs/InventoryTab';
 import CatalogTab from '../Components/Tabs/CatalogTab';
 import MembersTab from '../Components/Tabs/MembersTab';
+import type { MemberWithRole } from '../Components/Tabs/MembersTab';
 import InfoTab from '../Components/Tabs/InfoTab';
 
 const HomePage: React.FC = () => {
@@ -29,26 +30,59 @@ const HomePage: React.FC = () => {
         return <InventoryTab />;
       case 1:
         return <CatalogTab />;
-      case 2:
-        return (
-          <MembersTab
-            memberIds={[
-              'user_abc123',
-              'user_def456',
-              'user_ghi789',
-              'user_xyz101',
-              'user_jkl234',
-              'user_mno567',
-              'user_pqr890',
-              'user_stu321',
-              'user_vwx654',
-              'user_yza987',
-              'user_bcd210',
-              'user_efg543',
-              'user_hij876',
-            ]}
-          />
-        );
+      case 2: {
+        const mockMembers: MemberWithRole[] = [
+          {
+            id: 'user_abc123',
+            email: 'alex@example.com',
+            displayName: 'Alex Rivera',
+            createdAt: new Date('2025-12-01').toISOString(),
+            updatedAt: new Date('2026-02-05').toISOString(),
+            homes: [
+              {
+                homeId: homeId ?? 'home_abc123',
+                role: 'owner',
+                status: 'active',
+              },
+            ],
+            role: 'owner' as const,
+            status: 'active' as const,
+          },
+          {
+            id: 'user_def456',
+            email: 'jamie@example.com',
+            displayName: 'Jamie Chen',
+            createdAt: new Date('2026-01-12').toISOString(),
+            updatedAt: new Date('2026-02-04').toISOString(),
+            homes: [
+              {
+                homeId: homeId ?? 'home_abc123',
+                role: 'member',
+                status: 'active',
+              },
+            ],
+            role: 'member' as const,
+            status: 'active' as const,
+          },
+          {
+            id: 'user_ghi789',
+            email: 'riley@example.com',
+            displayName: 'Riley Patel',
+            createdAt: new Date('2025-11-20').toISOString(),
+            updatedAt: new Date('2026-02-02').toISOString(),
+            homes: [
+              {
+                homeId: homeId ?? 'home_abc123',
+                role: 'admin',
+                status: 'active',
+              },
+            ],
+            role: 'admin' as const,
+            status: 'active' as const,
+          },
+        ];
+        return <MembersTab members={mockMembers} />;
+      }
       case 3:
         return <InfoTab />;
       default:
