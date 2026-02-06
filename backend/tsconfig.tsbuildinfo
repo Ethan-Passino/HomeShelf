@@ -1,1 +1,1 @@
-{"root":["./src/app.ts","./src/server.ts","./src/config/env.ts","./src/lib/db.ts","./src/schemas/catalog.ts","./src/schemas/home.ts","./src/schemas/inventory.ts"],"version":"5.9.3"}
+{"root":["./src/app.ts","./src/server.ts","./src/config/env.ts","./src/lib/db.ts","./src/schemas/auth.ts","./src/schemas/catalog.ts","./src/schemas/home.ts","./src/schemas/inventory.ts","./src/schemas/user.ts"],"version":"5.9.3"}
