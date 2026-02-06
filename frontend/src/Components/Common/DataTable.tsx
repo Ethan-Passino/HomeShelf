@@ -1,6 +1,8 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState } from 'react';
 import {
+  Box,
   Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -9,15 +11,18 @@ import {
   TableRow,
   TableSortLabel,
   Tooltip,
-} from "@mui/material";
-import type { SxProps, Theme } from "@mui/material";
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
+import type { Breakpoint, SxProps, Theme } from '@mui/material';
 
-export type SortOrder = "asc" | "desc";
+export type SortOrder = 'asc' | 'desc';
 
 export type Column<T> = {
   id: string;
   label: string;
-  align?: "left" | "right" | "center";
+  align?: 'left' | 'right' | 'center';
   width?: number | string;
   sortable?: boolean;
   render?: (row: T) => React.ReactNode;
@@ -35,12 +40,25 @@ export type DataTableProps<T> = {
   emptyMessage?: string;
   striped?: boolean;
   stripedColors?: [string, string];
+  renderCard?: (
+    row: T,
+    context: {
+      index: number;
+      rowId: string | number;
+      rowProps?: { sx?: SxProps<Theme> };
+    }
+  ) => React.ReactNode;
+  /**
+   * Breakpoint at which to switch to card layout (only used when renderCard is provided)
+   */
+  cardBreakpoint?: Breakpoint;
+  cardGap?: number;
 };
 
 const toComparable = (value: unknown): string | number => {
-  if (value === null || value === undefined) return "";
+  if (value === null || value === undefined) return '';
   if (value instanceof Date) return value.getTime();
-  if (typeof value === "number") return value;
+  if (typeof value === 'number') return value;
   return String(value).toLowerCase();
 };
 
@@ -52,10 +70,18 @@ function DataTable<T extends Record<string, unknown>>({
   initialSort,
   defaultRowsPerPage = 10,
   rowsPerPageOptions,
-  emptyMessage = "No records found.",
+  emptyMessage = 'No records found.',
   striped = true,
-  stripedColors = ["white", "#fafafa"],
+  stripedColors = ['white', '#fafafa'],
+  renderCard,
+  cardBreakpoint = 'sm',
+  cardGap = 1.5,
 }: DataTableProps<T>) {
+  const theme = useTheme();
+  const isCardBreakpoint = useMediaQuery(
+    theme.breakpoints.down(cardBreakpoint)
+  );
+  const isCardLayout = !!renderCard && isCardBreakpoint;
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage);
   const [sortState, setSortState] = useState<{
@@ -68,10 +94,10 @@ function DataTable<T extends Record<string, unknown>>({
     setPage(0);
     setSortState((prev) => {
       if (prev?.columnId === column.id) {
-        const nextOrder = prev.order === "asc" ? "desc" : "asc";
+        const nextOrder = prev.order === 'asc' ? 'desc' : 'asc';
         return { columnId: column.id, order: nextOrder };
       }
-      return { columnId: column.id.toString(), order: "asc" };
+      return { columnId: column.id.toString(), order: 'asc' };
     });
   };
 
@@ -83,16 +109,20 @@ function DataTable<T extends Record<string, unknown>>({
     return [...rows].sort((a, b) => {
       const colKey = column.id;
       const aVal = toComparable(
-        column.sortValue ? column.sortValue(a) : (a as Record<string, unknown>)[colKey]
+        column.sortValue
+          ? column.sortValue(a)
+          : (a as Record<string, unknown>)[colKey]
       );
       const bVal = toComparable(
-        column.sortValue ? column.sortValue(b) : (b as Record<string, unknown>)[colKey]
+        column.sortValue
+          ? column.sortValue(b)
+          : (b as Record<string, unknown>)[colKey]
       );
 
-      if (typeof aVal === "number" && typeof bVal === "number") {
-        return sortState.order === "asc" ? aVal - bVal : bVal - aVal;
+      if (typeof aVal === 'number' && typeof bVal === 'number') {
+        return sortState.order === 'asc' ? aVal - bVal : bVal - aVal;
       }
-      return sortState.order === "asc"
+      return sortState.order === 'asc'
         ? String(aVal).localeCompare(String(bVal))
         : String(bVal).localeCompare(String(aVal));
     });
@@ -114,19 +144,61 @@ function DataTable<T extends Record<string, unknown>>({
     setPage(0);
   };
 
+  if (isCardLayout && renderCard) {
+    return (
+      <Paper elevation={2} sx={{ p: 1.5 }}>
+        <Stack spacing={cardGap}>
+          {paginatedRows.map((row, index) => {
+            const rowId = getRowId ? getRowId(row, index) : index;
+            const rowProps = getRowProps ? getRowProps(row, index) : undefined;
+            return (
+              <Box key={rowId as React.Key}>
+                {renderCard(row, { index, rowId, rowProps })}
+              </Box>
+            );
+          })}
+          {paginatedRows.length === 0 && (
+            <Box
+              sx={{
+                border: '1px dashed #e5e7eb',
+                borderRadius: 2,
+                p: 2,
+                textAlign: 'center',
+                color: 'text.secondary',
+              }}
+            >
+              <Typography variant="body2">{emptyMessage}</Typography>
+            </Box>
+          )}
+        </Stack>
+
+        <TablePagination
+          component="div"
+          count={sortedRows.length}
+          page={page}
+          onPageChange={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          rowsPerPageOptions={rowsPerPageOptions ?? [rowsPerPage]}
+          sx={{ mt: 1 }}
+        />
+      </Paper>
+    );
+  }
+
   return (
-    <Paper elevation={2} sx={{ overflowX: "auto" }}>
+    <Paper elevation={2} sx={{ overflowX: 'auto' }}>
       <Table size="small">
         <TableHead>
           <TableRow
             sx={{
-              backgroundColor: "#f5f7fb",
-              "& th": {
+              backgroundColor: '#f5f7fb',
+              '& th': {
                 fontWeight: 600,
-                fontSize: "0.85rem",
-                letterSpacing: "0.02em",
-                color: "#1f2937",
-                whiteSpace: "nowrap",
+                fontSize: '0.85rem',
+                letterSpacing: '0.02em',
+                color: '#1f2937',
+                whiteSpace: 'nowrap',
               },
             }}
           >
@@ -144,9 +216,7 @@ function DataTable<T extends Record<string, unknown>>({
                     <TableSortLabel
                       active={sortState?.columnId === col.id}
                       direction={
-                        sortState?.columnId === col.id
-                          ? sortState.order
-                          : "asc"
+                        sortState?.columnId === col.id ? sortState.order : 'asc'
                       }
                       onClick={() => handleSort(col)}
                     >
@@ -166,23 +236,36 @@ function DataTable<T extends Record<string, unknown>>({
             const rowProps = getRowProps ? getRowProps(row, index) : {};
             const rowSx = (rowProps as { sx?: SxProps<Theme> }).sx;
             const baseSx =
-              striped && !(rowSx && typeof rowSx === "object" && "backgroundColor" in rowSx)
-                ? { backgroundColor: index % 2 === 0 ? stripedColors[0] : stripedColors[1] }
+              striped &&
+              !(
+                rowSx &&
+                typeof rowSx === 'object' &&
+                'backgroundColor' in rowSx
+              )
+                ? {
+                    backgroundColor:
+                      index % 2 === 0 ? stripedColors[0] : stripedColors[1],
+                  }
                 : {};
             const mergedSx =
-              typeof rowSx === "function"
+              typeof rowSx === 'function'
                 ? rowSx
-                : { ...baseSx, ...(rowSx as Record<string, unknown> | undefined) };
+                : {
+                    ...baseSx,
+                    ...(rowSx as Record<string, unknown> | undefined),
+                  };
             return (
               <TableRow key={rowId as React.Key} {...rowProps} sx={mergedSx}>
                 {columns.map((col) => {
                   const colKey = col.id;
-                  const fallbackValue = (row as Record<string, unknown>)[colKey];
+                  const fallbackValue = (row as Record<string, unknown>)[
+                    colKey
+                  ];
                   const cellValue =
                     col.render && col.render(row) !== undefined
                       ? col.render(row)
                       : fallbackValue === undefined || fallbackValue === null
-                        ? "-"
+                        ? '-'
                         : String(fallbackValue);
                   return (
                     <TableCell key={col.id as React.Key} align={col.align}>

@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Tabs, Tab, Box, Divider } from '@mui/material';
+import {
+  Tabs,
+  Tab,
+  Box,
+  Divider,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import InventoryTab from '../Components/Tabs/InventoryTab';
 import CatalogTab from '../Components/Tabs/CatalogTab';
 import MembersTab from '../Components/Tabs/MembersTab';
@@ -9,6 +16,8 @@ import InfoTab from '../Components/Tabs/InfoTab';
 const HomePage: React.FC = () => {
   const { homeId } = useParams();
   const [tabIndex, setTabIndex] = useState(0);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setTabIndex(newValue);
@@ -59,17 +68,23 @@ const HomePage: React.FC = () => {
         </div>
 
         {/* Tabs */}
-        <Tabs
-          value={tabIndex}
-          onChange={handleChange}
-          textColor="primary"
-          indicatorColor="primary"
-        >
-          <Tab label="Inventory" />
-          <Tab label="Catalog" />
-          <Tab label="Members" />
-          <Tab label="Info" />
-        </Tabs>
+        <Box sx={{ overflowX: 'auto' }}>
+          <Tabs
+            value={tabIndex}
+            onChange={handleChange}
+            textColor="primary"
+            indicatorColor="primary"
+            variant={isMobile ? 'scrollable' : 'standard'}
+            scrollButtons={isMobile ? 'auto' : false}
+            allowScrollButtonsMobile
+            visibleScrollbar
+          >
+            <Tab label="Inventory" sx={{ minWidth: isMobile ? 'auto' : 120 }} />
+            <Tab label="Catalog" sx={{ minWidth: isMobile ? 'auto' : 120 }} />
+            <Tab label="Members" sx={{ minWidth: isMobile ? 'auto' : 120 }} />
+            <Tab label="Info" sx={{ minWidth: isMobile ? 'auto' : 120 }} />
+          </Tabs>
+        </Box>
 
         <Divider className="my-4" />
 

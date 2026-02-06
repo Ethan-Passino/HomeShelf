@@ -1,8 +1,9 @@
-import React, { useMemo } from "react";
-import { Avatar, Box, Typography } from "@mui/material";
-import DataTable from "../Common/DataTable";
-import TableFilters from "../Common/TableFilters";
-import type { Column } from "../Common/DataTable";
+import React, { useMemo } from 'react';
+import { Avatar, Box, Typography } from '@mui/material';
+import DataTable from '../Common/DataTable';
+import TableFilters from '../Common/TableFilters';
+import type { Column } from '../Common/DataTable';
+import RowCard from '../Common/RowCard';
 
 interface MembersTabProps {
   memberIds: string[];
@@ -15,7 +16,7 @@ type MemberRow = {
 };
 
 const MembersTab: React.FC<MembersTabProps> = ({ memberIds }) => {
-  const [search, setSearch] = React.useState("");
+  const [search, setSearch] = React.useState('');
 
   const rows: MemberRow[] = useMemo(
     () =>
@@ -39,21 +40,25 @@ const MembersTab: React.FC<MembersTabProps> = ({ memberIds }) => {
 
   const columns: Column<MemberRow>[] = [
     {
-      id: "avatar",
-      label: "Avatar",
+      id: 'avatar',
+      label: 'Avatar',
       width: 80,
-      render: (row) => <Avatar sx={{ width: 40, height: 40 }}>{row.username[0].toUpperCase()}</Avatar>,
+      render: (row) => (
+        <Avatar sx={{ width: 40, height: 40 }}>
+          {row.username[0].toUpperCase()}
+        </Avatar>
+      ),
     },
     {
-      id: "username",
-      label: "Username",
+      id: 'username',
+      label: 'Username',
       sortable: true,
       sortValue: (row) => row.username,
       render: (row) => row.username,
     },
     {
-      id: "email",
-      label: "Email",
+      id: 'email',
+      label: 'Email',
       sortable: true,
       sortValue: (row) => row.email,
       render: (row) => row.email,
@@ -80,7 +85,20 @@ const MembersTab: React.FC<MembersTabProps> = ({ memberIds }) => {
         rowsPerPageOptions={[12]}
         getRowId={(row) => row.id}
         emptyMessage="No members yet. Invite someone to get started."
-        stripedColors={["white", "#fafafa"]}
+        stripedColors={['white', '#fafafa']}
+        renderCard={(row) => (
+          <RowCard
+            overline="Member"
+            media={
+              <Avatar sx={{ width: 48, height: 48 }}>
+                {row.username[0].toUpperCase()}
+              </Avatar>
+            }
+            title={row.username}
+            subtitle={row.email}
+          />
+        )}
+        cardBreakpoint="sm"
       />
     </Box>
   );

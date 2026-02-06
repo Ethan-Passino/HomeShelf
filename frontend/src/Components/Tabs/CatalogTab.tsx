@@ -26,6 +26,7 @@ import DataTable from '../Common/DataTable';
 import TableFilters from '../Common/TableFilters';
 import type { Column } from '../Common/DataTable';
 import type { CatalogItem } from '../../types/catalogItem';
+import RowCard from '../Common/RowCard';
 
 const initialCatalog: CatalogItem[] = [
   {
@@ -368,7 +369,14 @@ const CatalogTab: React.FC = () => {
       label: 'Actions',
       align: 'center',
       render: (item) => (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'center' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            justifyContent: 'center',
+          }}
+        >
           <Tooltip title="Edit">
             <IconButton size="small" onClick={() => openEditModal(item)}>
               <EditIcon fontSize="small" />
@@ -454,7 +462,10 @@ const CatalogTab: React.FC = () => {
             label: 'Tag',
             value: selectedTag,
             onChange: (val) => setSelectedTag(val),
-            options: [{ value: 'all', label: 'All tags' }, ...availableTags.map((tag) => ({ value: tag, label: tag }))],
+            options: [
+              { value: 'all', label: 'All tags' },
+              ...availableTags.map((tag) => ({ value: tag, label: tag })),
+            ],
           },
         ]}
       />
@@ -468,6 +479,73 @@ const CatalogTab: React.FC = () => {
         getRowId={(row) => row.id}
         emptyMessage="No catalog items match your filters yet."
         stripedColors={['white', '#fafafa']}
+        renderCard={(item) => {
+          const avatarNode = item.imageUrl ? (
+            <Avatar
+              alt={item.name}
+              src={item.imageUrl}
+              variant="rounded"
+              sx={{ width: 56, height: 56, borderRadius: 2 }}
+            />
+          ) : (
+            <Avatar
+              variant="rounded"
+              sx={{ width: 56, height: 56, borderRadius: 2 }}
+            >
+              {item.name[0]}
+            </Avatar>
+          );
+
+          return (
+            <RowCard
+              overline="Catalog"
+              title={item.name}
+              subtitle={item.description || 'No description'}
+              media={avatarNode}
+              tags={
+                item.tags?.length ? (
+                  <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+                    {item.tags.map((tag) => (
+                      <Chip key={tag} label={tag} size="small" />
+                    ))}
+                  </Box>
+                ) : (
+                  <Typography variant="caption" color="text.secondary">
+                    No tags
+                  </Typography>
+                )
+              }
+              details={[
+                { label: 'Home', value: item.homeId },
+                { label: 'Created By', value: item.createdBy },
+                { label: 'Created', value: formatDate(item.createdAt) },
+                { label: 'Updated', value: formatDate(item.updatedAt) },
+              ]}
+              actions={
+                <Box sx={{ display: 'flex', gap: 0.5 }}>
+                  <Tooltip title="Edit">
+                    <IconButton
+                      size="small"
+                      onClick={() => openEditModal(item)}
+                    >
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Delete">
+                    <IconButton
+                      size="small"
+                      color="error"
+                      onClick={() => handleDelete(item.id)}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              }
+            />
+          );
+        }}
+        cardBreakpoint="sm"
       />
 
       {/* Image Modal */}
