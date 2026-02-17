@@ -26,14 +26,18 @@ const HeaderBar = ({ user, onLogout }: Props) => {
   return (
     <header className="w-full bg-white/80 backdrop-blur-md shadow-sm border-b border-white/50">
       <div className="mx-auto max-w-6xl px-4 py-2.5 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        <a
+          href="/"
+          className="flex items-center gap-3 hover:opacity-90 transition"
+          aria-label="HomeShelf home"
+        >
           <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-green-400 flex items-center justify-center text-white font-semibold shadow-sm">
             HS
           </div>
           <span className="text-xl font-semibold text-gray-900 tracking-tight">
             HomeShelf
           </span>
-        </div>
+        </a>
         <div className="relative" ref={menuRef}>
           <button
             onClick={() => setOpen((v) => !v)}
