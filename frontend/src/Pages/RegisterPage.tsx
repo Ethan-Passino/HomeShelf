@@ -1,16 +1,79 @@
-import { useState, type FormEvent } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthProvider';
+import { getGoogleClient } from '../auth/googleClient';
+import { googleLogin } from '../api/auth';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
-  const { signUp } = useAuth();
+  const { signUp, refresh } = useAuth();
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const googleButtonRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setGoogleLoading(true);
+      try {
+        const google = await getGoogleClient();
+        google.accounts.id.initialize({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+          callback: async (resp: any) => {
+            if (!resp.credential) return;
+            try {
+              await googleLogin(resp.credential);
+              await refresh();
+              navigate('/dashboard');
+            } catch (err) {
+              const message =
+                err instanceof Error ? err.message : 'Google signup failed';
+              if (!cancelled) setErrorMessage(message);
+            }
+          },
+        });
+
+        if (googleButtonRef.current) {
+          google.accounts.id.renderButton(googleButtonRef.current, {
+            type: 'standard',
+            theme: 'outline',
+            size: 'large',
+            shape: 'pill',
+            width: '100%',
+            text: 'continue_with',
+          });
+        }
+
+        google.accounts.id.prompt((notification: any) => {
+          if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+            // silently ignore; user still has the button
+          }
+        });
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : 'Google signup failed';
+        if (!cancelled) setErrorMessage(message);
+      } finally {
+        if (!cancelled) setGoogleLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      const g = (window as any).google;
+      if (g?.accounts?.id) g.accounts.id.cancel();
+    };
+  }, [navigate]);
 
   const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,10 +94,6 @@ const RegisterPage = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleGoogleSignup = () => {
-    setErrorMessage('Google sign-up is not wired up yet.');
   };
 
   return (
@@ -130,18 +189,18 @@ const RegisterPage = () => {
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={handleGoogleSignup}
-            className="mt-6 w-full py-2 border border-gray-300 text-gray-700 font-semibold rounded hover:bg-gray-100 transition flex items-center justify-center gap-3"
-          >
-            <img
-              src="https://www.svgrepo.com/show/475656/google-color.svg"
-              alt="Google"
-              className="w-5 h-5"
+          <div className="mt-6">
+            <div
+              ref={googleButtonRef}
+              className="flex justify-center"
+              aria-label="Continue with Google"
             />
-            Continue with Google
-          </button>
+            {googleLoading && (
+              <p className="text-xs text-gray-500 text-center mt-2">
+                Loading Google sign-in…
+              </p>
+            )}
+          </div>
         </form>
 
         <p className="text-sm text-center text-gray-600 mt-6">

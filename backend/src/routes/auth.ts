@@ -7,9 +7,12 @@ import { connectDb } from "../lib/db.js";
 import {
   loginSchema,
   registerSchema,
+  oauthLoginSchema,
   LoginPayload,
   RegisterPayload,
+  OAuthLoginPayload,
 } from "../schemas/auth.js";
+import { OAuth2Client } from "google-auth-library";
 
 const TOKEN_COOKIE = "hsession";
 const SESSION_DAYS = 7;
@@ -63,6 +66,8 @@ export async function authRoutes(app: FastifyInstance) {
   const db = await connectDb();
   const users = db.collection("users");
   const credentials = db.collection("credentials");
+  const googleClient =
+    env.GOOGLE_CLIENT_ID && new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
   await users.createIndex({ email: 1 }, { unique: true });
   await credentials.createIndex({ userId: 1, provider: 1 }, { unique: true });
@@ -146,6 +151,92 @@ export async function authRoutes(app: FastifyInstance) {
 
   app.get("/api/auth/me", async (request, reply) => {
     const user = await requireUser(app, request);
+    return reply.send({ user: toUserResponse(user) });
+  });
+
+  app.post("/api/auth/oauth/google", async (request, reply) => {
+    if (!googleClient) {
+      return reply.internalServerError("Google auth not configured");
+    }
+    const parsed = oauthLoginSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.badRequest("Invalid payload");
+    }
+    const { credential } = parsed.data as OAuthLoginPayload;
+
+    let payload: jwt.JwtPayload | undefined;
+    try {
+      const ticket = await googleClient.verifyIdToken({
+        idToken: credential,
+        audience: env.GOOGLE_CLIENT_ID,
+      });
+      payload = ticket.getPayload() || undefined;
+    } catch (err) {
+      request.log.error({ err }, "Failed to verify Google token");
+      return reply.unauthorized("Invalid Google token");
+    }
+
+    if (!payload) {
+      return reply.unauthorized("Invalid Google token");
+    }
+
+    const anyPayload = payload as Record<string, any>;
+    const email = anyPayload?.email?.toLowerCase();
+    const sub = anyPayload?.sub as string | undefined;
+    const name =
+      anyPayload?.name ||
+      anyPayload?.given_name ||
+      anyPayload?.email ||
+      "Google User";
+
+    if (!email || !sub) {
+      return reply.badRequest("Missing email or sub in Google payload");
+    }
+
+    const now = new Date().toISOString();
+    let user = await users.findOne({ email });
+    if (!user) {
+      const newUserId = new ObjectId();
+      const userDoc = {
+        _id: newUserId,
+        email,
+        displayName: name,
+        homes: [],
+        createdAt: now,
+        updatedAt: now,
+        avatarUrl: payload.picture,
+      };
+      const credDoc = {
+        userId: newUserId.toString(),
+        provider: "google",
+        emailVerified: true,
+        createdAt: now,
+        updatedAt: now,
+        oauthSub: sub,
+      };
+      await users.insertOne(userDoc);
+      await credentials.insertOne(credDoc);
+      user = userDoc;
+    } else {
+      // ensure credentials record exists
+      const cred = await credentials.findOne({
+        userId: user._id.toString(),
+        provider: "google",
+      });
+      if (!cred) {
+        await credentials.insertOne({
+          userId: user._id.toString(),
+          provider: "google",
+          emailVerified: true,
+          createdAt: now,
+          updatedAt: now,
+          oauthSub: sub,
+        });
+      }
+    }
+
+    const token = signSession(user._id.toString());
+    reply.setCookie(TOKEN_COOKIE, token, cookieOptions());
     return reply.send({ user: toUserResponse(user) });
   });
 

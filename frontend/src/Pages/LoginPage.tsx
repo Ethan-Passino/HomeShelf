@@ -1,18 +1,77 @@
-import { useState, type FormEvent } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthProvider';
+import { getGoogleClient } from '../auth/googleClient';
+import { googleLogin } from '../api/auth';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { signIn } = useAuth();
+  const { signIn, refresh } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const googleButtonRef = useRef<HTMLDivElement | null>(null);
 
-  const handleGoogleLogin = () => {
-    setError('Google sign-in is not wired up yet.');
-  };
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setGoogleLoading(true);
+      try {
+        const google = await getGoogleClient();
+        google.accounts.id.initialize({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+          callback: async (resp: any) => {
+            if (!resp.credential) return;
+            try {
+              await googleLogin(resp.credential);
+              await refresh();
+              navigate('/dashboard');
+            } catch (err) {
+              const message =
+                err instanceof Error ? err.message : 'Google login failed';
+              if (!cancelled) setError(message);
+            }
+          },
+        });
+
+        if (googleButtonRef.current) {
+          google.accounts.id.renderButton(googleButtonRef.current, {
+            type: 'standard',
+            theme: 'outline',
+            size: 'large',
+            shape: 'pill',
+            width: '100%',
+            text: 'continue_with',
+          });
+        }
+
+        google.accounts.id.prompt((notification: any) => {
+          if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+            // silently ignore; user can still click the button
+          }
+        });
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : 'Google login failed';
+        if (!cancelled) setError(message);
+      } finally {
+        if (!cancelled) setGoogleLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      const g = (window as any).google;
+      if (g?.accounts?.id) g.accounts.id.cancel();
+    };
+  }, [navigate]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -101,18 +160,18 @@ const LoginPage = () => {
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={handleGoogleLogin}
-            className="mt-6 w-full py-2 border border-gray-300 text-gray-700 font-semibold rounded hover:bg-gray-100 transition flex items-center justify-center gap-3"
-          >
-            <img
-              src="https://www.svgrepo.com/show/475656/google-color.svg"
-              alt="Google"
-              className="w-5 h-5"
+          <div className="mt-6">
+            <div
+              ref={googleButtonRef}
+              className="flex justify-center"
+              aria-label="Sign in with Google"
             />
-            Sign in with Google
-          </button>
+            {googleLoading && (
+              <p className="text-xs text-gray-500 text-center mt-2">
+                Loading Google sign-in…
+              </p>
+            )}
+          </div>
         </form>
 
         <p className="text-sm text-center text-gray-600 mt-6">

@@ -32,3 +32,10 @@ export async function currentUser() {
 export async function logout() {
   return api<{ ok: boolean }>('/api/auth/logout', { method: 'POST' });
 }
+
+export async function googleLogin(credential: string) {
+  return api<{ user: AuthUser }>('/api/auth/oauth/google', {
+    method: 'POST',
+    body: JSON.stringify({ provider: 'google', credential }),
+  });
+}

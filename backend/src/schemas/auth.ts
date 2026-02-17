@@ -35,7 +35,7 @@ export const loginSchema = z.object({
 
 export const oauthLoginSchema = z.object({
   provider: z.literal("google"),
-  oauthToken: z.string(),
+  credential: z.string(),
 });
 
 export type Credential = z.infer<typeof credentialsSchema>;
