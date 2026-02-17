@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import GroupAddOutlinedIcon from '@mui/icons-material/GroupAddOutlined';
@@ -7,6 +7,8 @@ import Tooltip from '@mui/material/Tooltip';
 import EditHomeModal from '../Components/Modals/EditHomeModal';
 import InviteUserModal from '../Components/Modals/InviteUserModal';
 import CreateHomeModal from '../Components/Modals/CreateHomeModal';
+import HeaderBar from '../Components/Common/HeaderBar';
+import { useAuth } from '../auth/AuthProvider';
 
 interface Home {
   id: string;
@@ -15,6 +17,8 @@ interface Home {
 }
 
 const DashboardPage = () => {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [homes, setHomes] = useState<Home[]>([
     { id: '1', name: 'Main House', createdAt: '2024-12-01' },
     { id: '2', name: 'Lake Cabin', createdAt: '2025-02-10' },
@@ -64,9 +68,15 @@ const DashboardPage = () => {
     // TODO: Optionally invite users
   };
 
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/login', { replace: true });
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-green-400 px-4 py-12 text-white">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-green-400">
+      {user && <HeaderBar user={user} onLogout={handleLogout} />}
+      <div className="max-w-6xl mx-auto px-4 py-12 text-white">
         <h1 className="text-4xl font-extrabold mb-10 text-center drop-shadow">
           HomeShelf Dashboard
         </h1>

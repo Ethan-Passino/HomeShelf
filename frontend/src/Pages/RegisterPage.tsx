@@ -1,9 +1,10 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { register } from '../api/auth';
+import { useAuth } from '../auth/AuthProvider';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
+  const { signUp } = useAuth();
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,7 +23,7 @@ const RegisterPage = () => {
 
     try {
       setLoading(true);
-      await register({ email, password, displayName });
+      await signUp({ email, password, displayName });
       navigate('/dashboard');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Sign up failed';
