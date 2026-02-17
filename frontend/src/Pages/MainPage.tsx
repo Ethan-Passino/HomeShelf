@@ -4,6 +4,8 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import HomeWorkIcon from '@mui/icons-material/HomeWork';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { useAuth } from '../auth/AuthProvider';
 
 const features = [
   {
@@ -66,6 +68,8 @@ const features = [
 ];
 
 const MainPage = () => {
+  const { user } = useAuth();
+
   return (
     <div className="w-full bg-gradient-to-b from-white to-blue-50">
       {/* Hero Section */}
@@ -79,16 +83,26 @@ const MainPage = () => {
             your garage — with ease.
           </p>
           <div className="flex gap-4">
-            <Link to="/login">
-              <button className="px-6 py-2 bg-white text-blue-600 font-semibold rounded shadow hover:bg-blue-100 transition">
-                Login
-              </button>
-            </Link>
-            <Link to="/register">
-              <button className="px-6 py-2 border border-white text-white font-semibold rounded hover:bg-white hover:text-blue-600 transition">
-                Register
-              </button>
-            </Link>
+            {user ? (
+              <Link to="/dashboard">
+                <button className="px-6 py-2 bg-white text-blue-600 font-semibold rounded shadow hover:bg-blue-100 transition inline-flex items-center gap-2">
+                  Go To Dashboard <ArrowForwardIosIcon fontSize="small" />
+                </button>
+              </Link>
+            ) : (
+              <>
+                <Link to="/login">
+                  <button className="px-6 py-2 bg-white text-blue-600 font-semibold rounded shadow hover:bg-blue-100 transition">
+                    Login
+                  </button>
+                </Link>
+                <Link to="/register">
+                  <button className="px-6 py-2 border border-white text-white font-semibold rounded hover:bg-white hover:text-blue-600 transition">
+                    Register
+                  </button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
 
