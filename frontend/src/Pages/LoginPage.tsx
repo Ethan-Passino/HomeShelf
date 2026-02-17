@@ -5,7 +5,7 @@ import {
   type FormEvent,
 } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../auth/AuthProvider';
+import { useAuth, LOGOUT_GUARD_KEY } from '../auth/AuthProvider';
 import { getGoogleClient } from '../auth/googleClient';
 import { googleLogin } from '../api/auth';
 
@@ -31,6 +31,7 @@ const LoginPage = () => {
             if (!resp.credential) return;
             try {
               await googleLogin(resp.credential);
+              localStorage.removeItem(LOGOUT_GUARD_KEY);
               await refresh();
               navigate('/dashboard');
             } catch (err) {

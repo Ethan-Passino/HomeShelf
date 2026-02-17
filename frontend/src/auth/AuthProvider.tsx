@@ -29,6 +29,8 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
+export const LOGOUT_GUARD_KEY = "hs.logout.guard";
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -38,6 +40,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const refresh = async () => {
+    // If user explicitly signed out but cookie remained, skip auto-login
+    if (localStorage.getItem(LOGOUT_GUARD_KEY)) {
+      setLoading(false);
+      return null;
+    }
     try {
       const { user: me } = await currentUser();
       setUser(me);
@@ -52,12 +59,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn: AuthContextValue["signIn"] = async (payload) => {
     const { user: loggedIn } = await apiLogin(payload);
+    localStorage.removeItem(LOGOUT_GUARD_KEY);
     setUser(loggedIn);
     return loggedIn;
   };
 
   const signUp: AuthContextValue["signUp"] = async (payload) => {
     const { user: created } = await apiRegister(payload);
+    localStorage.removeItem(LOGOUT_GUARD_KEY);
     setUser(created);
     return created;
   };
@@ -69,6 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // log but still clear local session so user can re-auth
       console.error("logout failed", err);
     } finally {
+      localStorage.setItem(LOGOUT_GUARD_KEY, Date.now().toString());
       setUser(null);
     }
   };

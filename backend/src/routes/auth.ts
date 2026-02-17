@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { FastifyInstance, FastifyRequest } from "fastify";
+import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { ObjectId } from "mongodb";
 import { env } from "../config/env.js";
 import { connectDb } from "../lib/db.js";
@@ -29,7 +29,9 @@ function signSession(userId: string) {
   });
 }
 
-function cookieOptions() {
+function cookieOptions(
+  overrides: Partial<Parameters<FastifyReply["setCookie"]>[2]> = {},
+) {
   const secure = process.env.NODE_ENV === "production";
   return {
     path: "/",
@@ -37,7 +39,14 @@ function cookieOptions() {
     sameSite: "lax" as const,
     secure,
     maxAge: SESSION_DAYS * 24 * 60 * 60,
+    ...overrides,
   };
+}
+
+function clearSessionCookie(reply: FastifyReply) {
+  reply.setCookie(TOKEN_COOKIE, "", {
+    ...cookieOptions({ maxAge: 0, expires: new Date(0) }),
+  });
 }
 
 async function requireUser(app: FastifyInstance, req: FastifyRequest) {
@@ -241,7 +250,7 @@ export async function authRoutes(app: FastifyInstance) {
   });
 
   app.post("/api/auth/logout", async (_request, reply) => {
-    reply.clearCookie(TOKEN_COOKIE, cookieOptions());
+    clearSessionCookie(reply);
     return reply.send({ ok: true });
   });
 }
